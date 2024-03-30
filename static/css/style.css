@@ -1,0 +1,61 @@
+body {
+    background: #0e141e !important;
+    height: fit-content;
+    width: 100vw;
+}
+
+html {
+    scrollbar-width: none;
+}
+
+/* Hide scrollbar for Webkit (Chrome, Safari) */
+body::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+.chatbox::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.navbar {
+    background-color: #050c1b !important;
+}
+
+.modal-content {
+    background-color: #343a40;
+    color: #fff;
+}
+
+.card {
+    background: #1d2432 !important;
+}
+
+header{
+    height: 16vh;
+    width: 100vw;
+    background: #111827 !important;
+}
+
+#hr1{
+    background: rgb(99, 99, 99);
+    margin-top: 0px;
+}
+
+
+.messageBox{
+    max-width: 50%;
+    height: fit-content;
+    border-radius: 0.7rem;
+    border: 1px solid #3a3a40 !important;
+    color: #d4e4f9;
+    background: #111827;
+}
+
+.chatbox{
+    height: 600px;
+    width: 100%;
+    border: 1px solid #3a3a40 !important;
+    border-radius: 0.7rem;
+    overflow-y: scroll;
+}

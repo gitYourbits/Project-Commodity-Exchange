@@ -13,6 +13,10 @@ def register(request):
     return render(request, 'register.html')
 
 
+def profile(request):
+    return render(request, 'profile.html')
+
+
 def signUpHandle(request):
     if request.method=='POST':
         username = request.POST.get('username', '')
