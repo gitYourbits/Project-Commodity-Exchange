@@ -53,6 +53,7 @@ header {
     border: 1px solid #3a3a40 !important;
     color: #d4e4f9;
     background: #111827;
+    z-index: -1000;
 }
 
 .chatbox {
@@ -63,4 +64,16 @@ header {
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
+    box-shadow: inset 0 7px 5px -5px white, inset 0 -7px 5px -5px white;
+}
+
+#message-input{
+    width: 88%;
+    border-radius: 0.5rem;
+}
+
+#send-button{
+    width: 8%;
+    border-radius: 0.5rem;
+    border-left: 1px solid grey;
 }

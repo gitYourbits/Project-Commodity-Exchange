@@ -149,7 +149,7 @@
 </div>
 
 <div class="row mx-5 my-5 pl-5">
-  <div class="chat-section col-md-8">
+  <div class="chat-section col-md-7">
     <div class="chatbox">
       {% for message in messages %}
       {% if message.sender.id == request.user.id %}
@@ -161,69 +161,67 @@
           {% endif %}
 
           {{message.message}}
-        </div>
-        {% endfor %}
       </div>
+      {% endfor %}
 
+    </div>
+    <div class="send mx-2 my-1">
       <input type="text" id="message-input" placeholder="Type your message...">
       <button id="send-button">Send</button>
-
-      <script>
-        const chatLog = document.getElementById('chat-log');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
-        const wsScheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsURL = `${wsScheme}//${window.location.host}`;
-
-        // Modify the WebSocket URL with the appropriate path for individual or group messaging
-        const receiverId = '{{receiver_id}}'; // Replace with the actual receiver ID
-        const groupName = 'GROUP_NAME'; // Replace with the actual group name
-        const socket = new WebSocket(`${wsURL}/ws/chat/${receiverId}/`); // For individual messaging
-        // const socket = new WebSocket(`${wsURL}/ws/group/${groupName}/`); // For group messaging
-
-        socket.onopen = function () {
-          console.log('WebSocket connection established.');
-        };
-
-        socket.onmessage = function (event) {
-          const data = JSON.parse(event.data);
-          const message = data.message;
-          const sender = data.sender;
-
-          // Create a new div element for the message box
-          const newMessageBox = document.createElement('div');
-          newMessageBox.classList.add('messageBox', 'px-3', 'my-1', 'py-1'); 
-          newMessageBox.setAttribute('data-sender-id', '{{ request.user.id }}')
-          newMessageBox.id = 'message-' + message.id; // Assign unique ID based on sender ID
-          newMessageBox.innerHTML = `${message.message}`;
-          
-          if (newMessageBox.dataset.senderId === '{{ request.user.id }}') {
-            newMessageBox.style.marginLeft = 'auto';
-          } else {
-            newMessageBox.style.marginRight = 'auto';
-          }
-
-          // Select the parent element with class 'chatbox'
-          const chatBoxParent = document.querySelector('.chatbox');
-
-          // Append the new message box to the parent element
-          chatBoxParent.appendChild(newMessageBox);
-        };
-
-        sendButton.addEventListener('click', function () {
-          const message = messageInput.value;
-          socket.send(JSON.stringify({ message: message }));
-          messageInput.value = '';
-        });
-
-        messageInput.addEventListener('keydown', function (event) {
-          if (event.key === 'Enter') {
-            sendButton.click();
-          }
-        });
-      </script>
-
     </div>
   </div>
 
-  {% endblock body %}
+  <script>
+    const chatLog = document.getElementById('chat-log');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const wsScheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsURL = `${wsScheme}//${window.location.host}`;
+
+    // Modify the WebSocket URL with the appropriate path for individual or group messaging
+    const roomName = '{{room_name}}'; // Replace with the actual receiver ID
+    const socket = new WebSocket(`${wsURL}/ws/chat/${roomName}/`); // For individual messaging
+
+    socket.onopen = function () {
+      console.log('WebSocket connection established.');
+    };
+
+    socket.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+
+      // Create a new div element for the message box
+      const newMessageBox = document.createElement('div');
+      newMessageBox.classList.add('messageBox', 'px-3', 'my-1', 'py-1');
+      newMessageBox.setAttribute('data-sender-id', data.sender_id)
+      newMessageBox.id = 'message-' + data.id; 
+
+      newMessageBox.innerHTML = `${data.message}`;
+
+      if (newMessageBox.dataset.senderId === '{{ request.user.id }}') {
+        newMessageBox.style.marginLeft = 'auto';
+      } else {
+        newMessageBox.style.marginRight = 'auto';
+      }
+
+      // Select the parent element with class 'chatbox'
+      const chatBoxParent = document.querySelector('.chatbox');
+
+      // Append the new message box to the parent element
+      chatBoxParent.appendChild(newMessageBox);
+    };
+
+    sendButton.addEventListener('click', function () {
+      const message = messageInput.value;
+      socket.send(JSON.stringify({ message: message}));
+      messageInput.value = '';
+    });
+
+    messageInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') {
+        sendButton.click();
+      }
+    });
+  </script>    
+</div>
+
+    {% endblock body %}

@@ -7,13 +7,9 @@ from community.models import ChatBox
 
 
 def index(request):
-    if request.user.id == 1:
-        receiver_id = 2
-    else:
-        receiver_id = 1
-
-    messages = ChatBox.objects.filter(sender=request.user)
-    return render(request, 'index.html', {"receiver_id": receiver_id, "messages": messages})
+    room_name = '1-2'
+    messages = ChatBox.objects.filter(room=room_name)
+    return render(request, 'index.html', {"room_name": room_name, "messages": messages})
 
 
 def register(request):

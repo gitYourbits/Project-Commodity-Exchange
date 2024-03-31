@@ -8,6 +8,7 @@ class ChatBox(models.Model):
     timeStamp = models.DateField(auto_now_add=True)
     seen = models.BooleanField(default=False)
     message = models.TextField()
+    room = models.CharField(max_length=20, default='1-2')
 
     def __str__(self):
         return f"{self.sender} -> {self.receiver}: {self.message}"
