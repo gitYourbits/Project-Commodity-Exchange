@@ -149,31 +149,81 @@
 </div>
 
 <div class="row mx-5 my-5 pl-5">
-    <div class="chat-section col-md-8">
-      <div class="chatbox">
-        {% for message in "abcdefghi" %}
-        <div class="messageBox float-right mx-1 px-3 my-2 py-2">
-          {% if message.mine %}
-        <div class="messageBox float-start mx-1 px-1 my-2 py-1">
-          {% elif message.their %}
-        <div class="messageBox float-end mx-1 px-1 my-2 py-1">
+  <div class="chat-section col-md-8">
+    <div class="chatbox">
+      {% for message in messages %}
+      {% if message.sender.id == request.user.id %}
+      <div class="messageBox px-3 my-1 py-1" style="margin-left: auto;" data-sender-id="{{ request.user.id }}"
+        id="message-{{ message.id }}">
+        {% else %}
+        <div class="messageBox px-3 my-1 py-1" style="margin-right: auto;" data-sender-id="{{ request.user.id }}"
+          id="message-{{ message.id }}">
           {% endif %}
-            
-          dummy text. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Saepe dolores cumque blanditiis nam corrupti quibusdam.
+
+          {{message.message}}
         </div>
         {% endfor %}
-    
       </div>
+
+      <input type="text" id="message-input" placeholder="Type your message...">
+      <button id="send-button">Send</button>
+
+      <script>
+        const chatLog = document.getElementById('chat-log');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const wsScheme = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsURL = `${wsScheme}//${window.location.host}`;
+
+        // Modify the WebSocket URL with the appropriate path for individual or group messaging
+        const receiverId = '{{receiver_id}}'; // Replace with the actual receiver ID
+        const groupName = 'GROUP_NAME'; // Replace with the actual group name
+        const socket = new WebSocket(`${wsURL}/ws/chat/${receiverId}/`); // For individual messaging
+        // const socket = new WebSocket(`${wsURL}/ws/group/${groupName}/`); // For group messaging
+
+        socket.onopen = function () {
+          console.log('WebSocket connection established.');
+        };
+
+        socket.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+          const message = data.message;
+          const sender = data.sender;
+
+          // Create a new div element for the message box
+          const newMessageBox = document.createElement('div');
+          newMessageBox.classList.add('messageBox', 'px-3', 'my-1', 'py-1'); 
+          newMessageBox.setAttribute('data-sender-id', '{{ request.user.id }}')
+          newMessageBox.id = 'message-' + message.id; // Assign unique ID based on sender ID
+          newMessageBox.innerHTML = `${message.message}`;
+          
+          if (newMessageBox.dataset.senderId === '{{ request.user.id }}') {
+            newMessageBox.style.marginLeft = 'auto';
+          } else {
+            newMessageBox.style.marginRight = 'auto';
+          }
+
+          // Select the parent element with class 'chatbox'
+          const chatBoxParent = document.querySelector('.chatbox');
+
+          // Append the new message box to the parent element
+          chatBoxParent.appendChild(newMessageBox);
+        };
+
+        sendButton.addEventListener('click', function () {
+          const message = messageInput.value;
+          socket.send(JSON.stringify({ message: message }));
+          messageInput.value = '';
+        });
+
+        messageInput.addEventListener('keydown', function (event) {
+          if (event.key === 'Enter') {
+            sendButton.click();
+          }
+        });
+      </script>
+
     </div>
-</div>
-
-
-  <footer class="mt-5" style="background: #050c1b; height: 60px; width: 100vw;">
-    <p class="py-3" style="margin: auto; text-align: center; display: block;">
-      <a href="" style="color: #40c1e8;">About Us</a><span style="color: #b7c9cc;"> | </span>
-      <a href="" style="color: #40c1e8;">Support</a><span style="color: #b7c9cc;"> | </span>
-      <a href="" style="color: #40c1e8;">Terms Of Service</a>
-    </p>
-  </footer>
+  </div>
 
   {% endblock body %}

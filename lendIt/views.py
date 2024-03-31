@@ -3,10 +3,17 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from community.models import ChatBox
 
 
 def index(request):
-    return render(request, 'index.html')
+    if request.user.id == 1:
+        receiver_id = 2
+    else:
+        receiver_id = 1
+
+    messages = ChatBox.objects.filter(sender=request.user)
+    return render(request, 'index.html', {"receiver_id": receiver_id, "messages": messages})
 
 
 def register(request):

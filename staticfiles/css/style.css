@@ -13,6 +13,7 @@ body::-webkit-scrollbar {
     width: 0;
     height: 0;
 }
+
 .chatbox::-webkit-scrollbar {
     width: 0;
     height: 0;
@@ -31,19 +32,21 @@ body::-webkit-scrollbar {
     background: #1d2432 !important;
 }
 
-header{
+header {
     height: 16vh;
     width: 100vw;
     background: #111827 !important;
 }
 
-#hr1{
+#hr1 {
     background: rgb(99, 99, 99);
     margin-top: 0px;
 }
 
 
-.messageBox{
+.messageBox {
+    /* flex: 0 0 auto; */
+    /* Set flex-grow, flex-shrink, and flex-basis */
     max-width: 50%;
     height: fit-content;
     border-radius: 0.7rem;
@@ -52,10 +55,12 @@ header{
     background: #111827;
 }
 
-.chatbox{
+.chatbox {
     height: 600px;
     width: 100%;
     border: 1px solid #3a3a40 !important;
     border-radius: 0.7rem;
     overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
 }
