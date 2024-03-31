@@ -10,8 +10,8 @@ def index(request):
 
 
 def lend(request):
-    return render(request, 'community/lend.html')
+    return render(request, 'community/lend.html', {"lend_token": True})
 
 def borrow(request):
-    return render(request, 'community/borrow.html')
+    return render(request, 'community/borrow.html', {"borrow_token": True})
 

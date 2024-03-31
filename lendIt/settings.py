@@ -83,6 +83,17 @@ CHANNEL_LAYERS = {
 }
 
 
+# for outlook mail-otp
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Or False if you're using SSL
+EMAIL_HOST_USER = 'mr.raojiad19092003@gmail.com'
+EMAIL_HOST_PASSWORD = 'okpw xnio jwms rlav'
+
+
+
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 

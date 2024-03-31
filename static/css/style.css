@@ -77,3 +77,14 @@ header {
     border-radius: 0.5rem;
     border-left: 1px solid grey;
 }
+
+#notification_container{
+    height: 300px;
+    overflow-y: scroll;
+    width: 400px;
+}
+
+#notification_container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
