@@ -18,11 +18,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.group_name, self.channel_name)
 
         await self.accept()
-        print("connected......................")
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
-        print("dis-connected......................")
 
     @database_sync_to_async
     def get_receiver(self, receiver_id):
@@ -33,7 +31,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message_content = text_data_json['message']
         
         message = await self.create_message(message_content)
-        print(message_content, "-------------------")
 
         message_data = {
             'id': message.id,
@@ -50,8 +47,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message': message_data,
             }
         )
-
-        print("sent---------------------")
         
 
     @database_sync_to_async
@@ -61,6 +56,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def send_message(self, event):
         message = event['message']
-        print(message, "--------------------")
         await self.send(text_data=json.dumps(message))
-        print("sending---------------------")

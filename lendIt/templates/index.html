@@ -150,7 +150,7 @@
 
 <div class="row mx-5 my-5 pl-5">
   <div class="chat-section col-md-7">
-    <div class="chatbox">
+    <div class="chatbox" id="chatbox">
       {% for message in messages %}
       {% if message.sender.id == request.user.id %}
       <div class="messageBox px-3 my-1 py-1" style="margin-left: auto;" data-sender-id="{{ request.user.id }}"
@@ -172,6 +172,11 @@
   </div>
 
   <script>
+    function scrollToBottom() {
+      var div = document.getElementById("chatbox");
+      div.scrollTop = div.scrollHeight;
+    }
+
     const chatLog = document.getElementById('chat-log');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
@@ -208,6 +213,8 @@
 
       // Append the new message box to the parent element
       chatBoxParent.appendChild(newMessageBox);
+
+      scrollToBottom();
     };
 
     sendButton.addEventListener('click', function () {
