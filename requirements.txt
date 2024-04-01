@@ -20,6 +20,7 @@ pycparser==2.22
 PyGetWindow==0.0.9
 PyMsgBox==1.0.9
 pyOpenSSL==24.1.0
+pyotp==2.9.0
 pyperclip==1.8.2
 PyRect==0.2.0
 PyScreeze==0.1.30
