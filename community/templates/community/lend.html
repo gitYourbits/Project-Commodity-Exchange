@@ -1,104 +1,32 @@
 {% extends "base.html" %}
 {% load static %}
 {% block body %}
-    <!-- Cards in the same row -->
-    {% for i in tie %}
-    <div class="container mt-5">
-      <div class="row">
-          <div class="col-md-6">
-              <div class="card bg-dark text-light">
-                  <div class="card-body">
-                    <img class="card-img-top float-right" src={% static "images/img_tie.jpg"%} alt="Card image" style="max-width: 200px; max-height: 150px;">
+<div class="container mt-5">
+  {% if demands|length  == 0 %}
+  <p class="text-light" style="margin: auto; text-align: center;"></p>No items available!
+  {% else %}
+  {% for category, demands_list in demands.items %}
+  {{category}}
+  <div class="row">
+    {% for demand in demands_list %}
+    <div class="col-md-6">
+      <div class="card bg-dark text-light">
+        <div class="card-body">
+          <img class="card-img-top float-right" src='/media/{{demand.image}}' alt="Card image"
+            style="max-width: 200px; max-height: 150px;">
 
-                      <h5 class="card-title">Item 1</h5>
-                      <p class="card-text">Description of item 1.</p>
-                      <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#lendModal">
-                        Lend
-                      </button>
-                  </div>
-              </div>
-          </div>
-          <div class="col-md-6">
-              <div class="card bg-dark text-light">
-                  <div class="card-body">
-                    <img class="card-img-top float-right" src={% static "images/img_tie.jpg"%} alt="Card image" style="max-width: 200px; max-height: 150px;">
-
-                      <h5 class="card-title"></h5>
-                      <p class="card-text">Description of item A.</p>
-                      <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#BorrowModal">
-                        Lend
-                      </button>
-                  </div>
-              </div>
-          </div>
+          <h5 class="card-title">{{demand.name}}</h5>
+          <p class="card-text">{{demand.timeStamp}}</p>
+          <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#lendModal">
+            Lend
+          </button>
+        </div>
       </div>
+    </div>
+    {%endfor%}
   </div>
-  {%endfor%}
-    <!-- Cards in the same row -->
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card bg-dark text-light">
-                    <div class="card-body">
-                      <img class="card-img-top float-right" src={% static "images/img_tie.jpg"%} alt="Card image" style="max-width: 200px; max-height: 150px;">
-
-                        <h5 class="card-title">Item 1</h5>
-                        <p class="card-text">Description of item 1.</p>
-                        <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#lendModal">
-                          Lend
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light">
-                    <div class="card-body">
-                      <img class="card-img-top float-right" src={% static "images/img_tie.jpg"%} alt="Card image" style="max-width: 200px; max-height: 150px;">
-
-                        <h5 class="card-title">Item A</h5>
-                        <p class="card-text">Description of item A.</p>
-                        <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#BorrowModal">
-                          Lend
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-      <!-- Cards in the same row -->
-      <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card bg-dark text-light">
-                    <div class="card-body">
-                      <img class="card-img-top float-right" src={% static "images/img_tie.jpg"%} alt="Card image" style="max-width: 200px; max-height: 150px;">
-
-                        <h5 class="card-title">Item 1</h5>
-                        <p class="card-text">Description of item 1.</p>
-                        <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#lendModal">
-                          Lend
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark text-light">
-
-                    <div class="card-body">
-                      <img class="card-img-top float-right" src={% static "images/img_tie.jpg"%} alt="Card image" style="max-width: 200px; max-height: 150px;">
-
-                        <h5 class="card-title">Item A</h5>
-                        <p class="card-text">Description of item A.</p>
-
-                        <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#BorrowModal">
-                          Lend
-                        </button>
-
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
+  {% endfor %}
+  {% endif %}
+</div>
   
 {% endblock body %}

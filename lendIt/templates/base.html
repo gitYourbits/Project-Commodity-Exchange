@@ -58,10 +58,14 @@
             <span class="badge badge-pill badge-danger">{{notifications|length}}</span>
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" id="notification_container">
+            {% if notifications|length == 0 %}
+            <p class="text-light" style="margin: auto; text-align: center;"></p>No notifications available!
+            {% else %}
             {% for notification in "notifications" %}
             <a class="dropdown-item px-3 py-2" href="#">Notification {{forloop.counter}}</a>
             <hr class="my-0">
             {% endfor %}
+            {% endif %}
           </div>
         </li>
 
