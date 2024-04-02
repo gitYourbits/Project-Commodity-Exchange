@@ -15,7 +15,7 @@ def index(request):
 
     latest_ongoing_deals = Deal.objects.all()[0:6]
     categories = Offering.objects.values_list('category', flat=True).distinct()
-    notifications = Notification.objects.filter(parent=request.user.id)
+    notifications = Notification.objects.filter(parent=request.user.id, seen=False)
 
     return render(request, 'index.html', {"index_token": True, 'demand_form': demand_form, 'offering_form': offering_form, "deals": latest_ongoing_deals, 'categories': categories, 'notifications': notifications})
 

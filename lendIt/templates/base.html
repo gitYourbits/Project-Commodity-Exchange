@@ -5,15 +5,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lendit</title>
+  <title>Lendit: {{request.user.first_name}}</title>
   <!-- Bootstrap CSS -->
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+  <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 
 </head>
 
-<body onload="scrollToBottom()">
+<body>
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark px-5">
@@ -61,8 +63,10 @@
             {% if notifications|length == 0 %}
             <p class="text-light" style="margin: auto; text-align: center;"></p>No notifications available!
             {% else %}
-            {% for notification in "notifications" %}
-            <a class="dropdown-item px-3 py-2" href="#">Notification {{forloop.counter}}</a>
+            {% for notification in notifications %}
+            <a class="dropdown-item px-3 py-2" href="{{notification.associated_url}}">{{notification.about}}</a>
+            <p id="clear_notif" class="text-primary">clear</p>
+
             <hr class="my-0">
             {% endfor %}
             {% endif %}

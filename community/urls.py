@@ -8,6 +8,8 @@ urlpatterns = [
     path('', views.index),
     path('lend/', views.lend),
     path('borrow/', views.borrow),
+    path('create-offering-for-demand/<int:id>/', views.create_offering),
     path('deal/<str:id>/ongoing/', views.dealing),
+    path('deal/<str:id>/closing/', views.closing_deal),
     path('deal/<int:id>/closed/', views.deal),
 ]

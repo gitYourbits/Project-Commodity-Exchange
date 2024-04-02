@@ -2,7 +2,7 @@
 {% load static %}
 {% block body %}
 
-<div class="row mx-5 my-5 pl-5">
+<div class="row mx-5 my-5 pl-5" onload="scrollToBottom()">
     <div class="chat-section col-md-7">
         <h4 class="text-light">Your chat with {{username}}</h4>
         <div class="chatbox" id="chatbox">
@@ -74,7 +74,10 @@
 
             sendButton.addEventListener('click', function () {
                 const message = messageInput.value;
-                socket.send(JSON.stringify({ message: message }));
+                socket.send(JSON.stringify({ message: message,
+                offering_id: '{{id}}',
+                notification_receiver: '{{notification_receiver}}'}));
+                
                 messageInput.value = '';
             });
 
@@ -88,6 +91,11 @@
 
 <div class="dealing" style="display: block; align-items: center; text-align: center; margin: auto;">
     <button id="close_deal" class="btn btn-outline-danger">Close Deal</button>
+    <script>
+        $('#close_deal').click(function(){
+            document.location = `/community/deal/{{id}}/closing`;
+        })
+    </script>
 </div>
 
     {% endblock body %}

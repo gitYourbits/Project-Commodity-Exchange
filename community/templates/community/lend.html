@@ -16,8 +16,8 @@
             style="max-width: 200px; max-height: 150px;">
 
           <h5 class="card-title">{{demand.name}}</h5>
-          <p class="card-text">{{demand.timeStamp}}</p>
-          <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#lendModal">
+          <p class="card-text">{{demand.borrower}}</p>
+          <button type="button" class="btn btn-success mt-3" onclick="document.location = '/community/create-offering-for-demand/{{demand.id}}'">
             Lend
           </button>
         </div>

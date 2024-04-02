@@ -88,3 +88,19 @@ header {
     width: 0;
     height: 0;
 }
+
+.categories{
+    cursor: pointer;
+
+}
+
+.categories:hover{
+    color: blue;
+    text-decoration: underline;
+}
+
+#clear_notif{
+    cursor: pointer;
+    padding-left: auto;
+    
+}

@@ -78,6 +78,29 @@ header {
     border-left: 1px solid grey;
 }
 
-.active a{
-    color: rgb(0, 0, 215);
+#notification_container{
+    height: 300px;
+    overflow-y: scroll;
+    width: 400px;
+}
+
+#notification_container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+.categories{
+    cursor: pointer;
+
+}
+
+.categories:hover{
+    color: blue;
+    text-decoration: underline;
+}
+
+#clear_notif{
+    cursor: pointer;
+    padding-left: auto;
+    
 }

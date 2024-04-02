@@ -1,7 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from django.contrib.auth.models import User
-from .models import ChatBox
+from .models import ChatBox, Notification
 from channels.db import database_sync_to_async
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -10,7 +10,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.sender = self.scope['user']
         self.room_name = self.scope['url_route']['kwargs'].get('room_name')
         self.rec = self.room_name.split('-')
-        self.receiver = await self.get_receiver(self.rec[-1])
+        if(self.sender.id) == self.rec[1]:
+            self.receiver = await self.get_receiver(int(self.rec[-1]))
+        else:
+            self.receiver = await self.get_receiver(int(self.rec[1]))
 
         self.group_name = f"chat_{self.room_name}"
 
@@ -29,8 +32,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_content = text_data_json['message']
+        offering_id = text_data_json['offering_id'].split('by')[0]
+        notification_receiver_id = int(text_data_json['notification_receiver'])
         
-        message = await self.create_message(message_content)
+        message = await self.create_message(message_content, offering_id, notification_receiver_id)
 
         message_data = {
             'id': message.id,
@@ -50,8 +55,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
 
     @database_sync_to_async
-    def create_message(self, message_content):
-        message = ChatBox.objects.create(sender=self.sender, receiver=self.rec[-1], message=message_content, room=self.room_name)
+    def create_message(self, message_content, offering_id, notification_receiver_id):
+        message = ChatBox.objects.create(sender=self.sender, receiver=self.receiver.id, message=message_content, room=self.room_name)
+
+        notification = Notification(parent = User.objects.filter(id=notification_receiver_id)[0], associated_url = f'/community/deal/{offering_id}by{self.receiver.id}/ongoing', about=f'You have a new message from {self.sender.first_name}, user_id = {self.sender.id}')
+
+        notification.save()
+
         return message
 
     async def send_message(self, event):

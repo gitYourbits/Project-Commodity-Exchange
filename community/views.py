@@ -48,17 +48,46 @@ def lend(request):
 
 
 def dealing(request, id):
+    id_stored = id
     id=id.split('by')
     lender = Offering.objects.filter(id=int(id[0]))[0].lender
 
     if request.user.id == lender.id:
         username = User.objects.filter(id=int(id[-1]))[0].username
+        msg_notification_receiver = int(id[-1])
     else:
         username = lender.username
+        msg_notification_receiver = lender.id
 
-    room_name = f'{id[-1]}-{lender.id}' # borrower-lender //always
+    room_name = f'{id[0]}-{id[-1]}-{lender.id}' # offering-borrower-lender //always
     messages = ChatBox.objects.filter(room=room_name)
-    return render(request,'community/dealing.html', {'room_name': room_name, 'messages': messages, 'username': username})
+    return render(request,'community/dealing.html', {'room_name': room_name, 'messages': messages, 'username': username, 'id': id_stored, 'notification_receiver': msg_notification_receiver})
 
 def deal(request, id):
-    pass
+    deal = Deal.objects.filter(id=int(id))[0]
+    return render(request, 'community/deal.html', {'deal': deal})
+
+def closing_deal(reqeust, id):
+    id = id.split('by')
+    item = Offering.objects.filter(id=int(id[0]))[0]
+    deal = Deal(lender = item.lender, borrower=int(id[-1]), item=item, price=item.price)
+    deal.save()
+    return redirect('/community/deal/{}/closed'.format(deal.id))
+
+def create_offering(request, id):
+    if request.user.is_authenticated:
+        id=int(id)
+        demand = Demand.objects.filter(id=id)[0]
+
+        offering = Offering.objects.filter(lender=request.user, name=demand.name)
+
+        if len(offering)==0:
+            offering = Offering(lender = request.user, name = demand.name, category=demand.category, description=demand.description, price=demand.price, image=demand.image)
+            offering.save()
+
+            notification = Notification(parent=demand.borrower, associated_url=f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing', about=f'You have an offering from {offering.lender.first_name}, user_id = {offering.lender.id}')
+            notification.save()
+
+            return redirect(f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing')
+        return redirect(f'/community/deal/{offering[0].id}by{demand.borrower.id}/ongoing')
+

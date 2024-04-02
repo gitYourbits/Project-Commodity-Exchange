@@ -60,4 +60,6 @@ class Notification(models.Model):
     parent = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
     associated_url = models.URLField(default='/')
     about = models.TextField(default='Notification')
+    seen = models.BooleanField(default=False)
+    
 

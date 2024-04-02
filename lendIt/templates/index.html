@@ -120,7 +120,7 @@
         <div class="card-body" style="color: #d4e4f9;">
           <h5 class="card-title">{{deal.item.name}}</h5>
           <p class="card-text">{{deal.timeStamp}}</p>
-          <button type="button" class="btn btn-light mt-3" data-toggle="modal" data-target="#lendModal">
+          <button type="button" class="btn btn-light mt-3" onclick="document.location = '/community/deal/{{deal.id}}/closed'">
             View
           </button>
         </div>
@@ -130,7 +130,7 @@
     {% endif %}
   </div>
 
-  <h5 class="my-4" style="color: #d4e4f9;">Categories</h5>
+  <h5 class="my-4" style="color: #d4e4f9;">Borrow Categories</h5>
 
   <div class="row my-2 mx-1"
     style="background: #111827 !important; border: 1px solid #3a3a40 !important; border-radius: 0.5rem;">
@@ -141,7 +141,7 @@
 
     {% for category in categories %}
     <div class="col-md-4 py-3 mx-0" style="color: #d4e4f9; border-right: 1px solid #1d2432;">
-      <h5>{{category}}</h5>
+      <h5 class="categories" onclick="document.location = '/community/borrow/#category-{{category}}'">{{category}}</h5>
     </div>
     {% endfor %}
 
