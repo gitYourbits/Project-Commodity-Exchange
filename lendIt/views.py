@@ -27,7 +27,7 @@ def register(request):
 
         email = request.POST.get('email', '')
         if '@lpu.in' not in email:
-            messages.error(reqeust, 'You can only register through your university email id.')
+            messages.error(request, 'You can only register through your university email id.')
             return redirect('/')
 
         pass1 = request.POST.get('pass1', '')
