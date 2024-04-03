@@ -3,15 +3,15 @@
 {% block body %}
 
 <div class="row mx-5 my-5 pl-5" onload="scrollToBottom()">
-    <div class="chat-section col-md-7">
+    <div class="chat-section col-md-6">
         <h4 class="text-light">Your chat with {{username}}</h4>
         <div class="chatbox" id="chatbox">
             {% for message in messages %}
             {% if message.sender.id == request.user.id %}
-            <div class="messageBox px-3 my-1 py-1" style="margin-left: auto;" data-sender-id="{{ request.user.id }}"
+            <div class="messageBox px-3 my-1 py-1 mr-2" style="margin-left: auto;" data-sender-id="{{ request.user.id }}"
                 id="message-{{ message.id }}">
                 {% else %}
-                <div class="messageBox px-3 my-1 py-1" style="margin-right: auto;"
+                <div class="messageBox px-3 my-1 py-1 ml-2" style="margin-right: auto;"
                     data-sender-id="{{ request.user.id }}" id="message-{{ message.id }}">
                     {% endif %}
 
@@ -59,8 +59,10 @@
 
                 if (newMessageBox.dataset.senderId === '{{ request.user.id }}') {
                     newMessageBox.style.marginLeft = 'auto';
+                    newMessageBox.classList.add('mr-2');
                 } else {
                     newMessageBox.style.marginRight = 'auto';
+                    newMessageBox.classList.add('ml-2');
                 }
 
                 // Select the parent element with class 'chatbox'

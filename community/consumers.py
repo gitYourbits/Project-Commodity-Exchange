@@ -58,7 +58,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def create_message(self, message_content, offering_id, notification_receiver_id):
         message = ChatBox.objects.create(sender=self.sender, receiver=self.receiver.id, message=message_content, room=self.room_name)
 
-        notification = Notification(parent = User.objects.filter(id=notification_receiver_id)[0], associated_url = f'/community/deal/{offering_id}by{self.receiver.id}/ongoing', about=f'You have a new message from {self.sender.first_name}, user_id = {self.sender.id}')
+        notification = Notification(parent = User.objects.filter(id=notification_receiver_id)[0], associated_url = f'/community/deal/{offering_id}by{self.receiver.id}/ongoing', about=f'You have a new message from {self.sender.username}')
 
         notification.save()
 

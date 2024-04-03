@@ -28,7 +28,7 @@ urlpatterns = [
     path('login/', views.loginHandle, name='user_login'),
     path('logout/', views.logoutHandle, name='user_login'),
     path('profile/', views.profile, name='user_profile'),
-
+    path('clear-notifications/', views.clear_notifs, name='clear_notifications'),
 
     path('community/', include('community.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

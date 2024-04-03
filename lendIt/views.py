@@ -6,6 +6,8 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from community.models import Demand, Offering, Deal, Grievance, Notification
 from .form import Offer, AskFor, PutGrievance
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 def index(request):
@@ -18,6 +20,22 @@ def index(request):
     notifications = Notification.objects.filter(parent=request.user.id, seen=False)
 
     return render(request, 'index.html', {"index_token": True, 'demand_form': demand_form, 'offering_form': offering_form, "deals": latest_ongoing_deals, 'categories': categories, 'notifications': notifications})
+
+
+@csrf_exempt
+def clear_notifs(request):
+    if request.method == 'POST':
+        # Get the raw data from POST request
+        raw_data = request.body.decode('utf-8')
+        # Parse the JSON data into a Python dictionary
+        data = json.loads(raw_data)
+        # Extract notification IDs from the dictionary keys
+        notification_ids = list(data["this_user_notification_ids"].values())
+        for id in notification_ids:
+            n = Notification.objects.get(id=int(id))
+            n.seen = True
+            n.save()
+        return HttpResponse("Cleared Notifications...")
 
 
 def register(request):

@@ -52,7 +52,8 @@ header {
     border-radius: 0.7rem;
     border: 1px solid #3a3a40 !important;
     color: #d4e4f9;
-    background: #111827;
+    /* background: #111827; */
+    background: rgb(0, 0, 160);
     z-index: -1000;
 }
 
@@ -99,8 +100,3 @@ header {
     text-decoration: underline;
 }
 
-#clear_notif{
-    cursor: pointer;
-    padding-left: auto;
-    
-}

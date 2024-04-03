@@ -85,7 +85,7 @@ def create_offering(request, id):
             offering = Offering(lender = request.user, name = demand.name, category=demand.category, description=demand.description, price=demand.price, image=demand.image)
             offering.save()
 
-            notification = Notification(parent=demand.borrower, associated_url=f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing', about=f'You have an offering from {offering.lender.first_name}, user_id = {offering.lender.id}')
+            notification = Notification(parent=demand.borrower, associated_url=f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing', about=f'You have an offering from {offering.lender.username}')
             notification.save()
 
             return redirect(f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing')

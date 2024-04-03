@@ -54,6 +54,7 @@ header {
     color: #d4e4f9;
     background: #111827;
     z-index: -1000;
+    background: blue;
 }
 
 .chatbox {
@@ -99,8 +100,3 @@ header {
     text-decoration: underline;
 }
 
-#clear_notif{
-    cursor: pointer;
-    padding-left: auto;
-    
-}
