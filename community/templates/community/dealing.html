@@ -2,7 +2,7 @@
 {% load static %}
 {% block body %}
 
-<div class="row my-4 px-3 ml-5" onload="scrollToBottom()">
+<div class="row my-4 px-3 ml-5">
     <div class="col-md-4" id="chat-history-column">
         <h5 class="text-light mb-3" style="text-align: center;">Chat Histories</h5>
         <div class="chat-histories">
@@ -12,7 +12,8 @@
                 <a href="/community/deal/{{chat.2}}/ongoing" class="card-body"
                     style="color: #d4e4f9; text-decoration: none;">
 
-                    <p class="card-title my-0"><b>{{chat.1.first_name}} {{chat.1.last_name}} ({{chat.1.username}}) - {{chat.3.name}}</b>
+                    <p class="card-title my-0"><b>{{chat.1.first_name}} {{chat.1.last_name}} ({{chat.1.username}}) -
+                            {{chat.3.name}}</b>
                     </p>
                     <p class="card-text my-0">Latest message: {{chat.0.message}}</p>
                 </a>
@@ -54,10 +55,13 @@
                         $(this).children().removeClass('text-primary');
                     }
                 );
+                
+                scrollToBottom();
             });
-
+            
             function scrollToBottom() {
                 var div = document.getElementById("chatbox");
+                console.log(div);
                 div.scrollTop = div.scrollHeight;
             }
 

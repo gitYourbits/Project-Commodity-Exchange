@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import ChatBox, Demand, Offering, Deal, Grievance, Notification
 from lendIt.form import Offer, AskFor, PutGrievance
-from operator import attrgetter
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 def index(request):
@@ -58,8 +59,19 @@ def lend(request):
             demands[category['category']] = category_wise_items
         return render(request, 'community/lend.html', {"lend_token": True, "demands": demands})
 
-
+@csrf_exempt
 def dealing(request, id):
+    if request.method == "POST":
+        raw_data = request.body.decode('utf-8')
+        data = json.loads(raw_data)
+        notif_id = data['notif_id']
+
+        this_notif = Notification.objects.get(id = int(notif_id))
+        this_notif.clicked = True
+        this_notif.save()
+
+        return HttpResponse('Notification clicked...')
+
     id_stored = id
     id=id.split('by')
     lender = Offering.objects.filter(id=int(id[0]))[0].lender
@@ -117,7 +129,7 @@ def create_offering(request, id):
             offering = Offering(lender = request.user, name = demand.name, category=demand.category, description=demand.description, price=demand.price, image=demand.image)
             offering.save()
 
-            notification = Notification(parent=demand.borrower, associated_url=f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing', about=f'You have an offering from {offering.lender.username}')
+            notification = Notification(parent=demand.borrower, associated_url=f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing/', about=f'You have an offering from {offering.lender.username}')
             notification.save()
 
             return redirect(f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing')

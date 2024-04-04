@@ -18,13 +18,14 @@ body::-webkit-scrollbar {
     width: 0;
     height: 0;
 }
-/* .chat-histories::-webkit-scrollbar {
+.chat-histories::-webkit-scrollbar {
     width: 0;
     height: 0;
-} */
+}
+
 .chat-histories{
     overflow-y: scroll;
-    width: 80vh;
+    height: 75vh;
 }
 
 .navbar {
@@ -90,7 +91,7 @@ header {
 #notification_container{
     height: 300px;
     overflow-y: scroll;
-    width: 400px;
+    width: 450px;
 }
 
 #notification_container::-webkit-scrollbar {

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'channels',
     'django.contrib.staticfiles',
     'community.apps.CommunityConfig',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [

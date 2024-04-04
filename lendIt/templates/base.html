@@ -20,7 +20,8 @@
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark px-5">
-    <a class="navbar-brand" href="/" style="font-size: 1.5rem;"><img style="filter: invert(100%);" src="{% static 'images/b3-logo (no bg).png' %}" alt="loading..." width="60px" height="60px">B3</a>
+    <a class="navbar-brand" href="/" style="font-size: 1.5rem;"><img style="filter: invert(100%);"
+        src="{% static 'images/b3-logo (no bg).png' %}" alt="loading..." width="60px" height="60px">B3</a>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,9 +63,11 @@
             </svg>
             <span class="badge badge-pill badge-danger">{{notifications|length}}</span>
           </a>
+
+          {% load humanize %}
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown" id="notification_container">
             {% if notifications|length == 0 %}
-            <p class="text-dark" style="margin: auto; text-align: center;">No notifications available!</p>
+            <p class="text-dark" style="margin: auto; text-align: center;"><b>No notifications available!</b></p>
             {% else %}
 
             <script>
@@ -73,9 +76,20 @@
 
             <a class="dropdown-item text-primary px-3 py-2" id="clear-notifs" href="#"
               style="text-align: center;">[Clear all]</a>
+            <hr class="my-0">
 
             {% for notification in notifications %}
-            <a class="dropdown-item px-3 py-2" href="{{notification.associated_url}}">{{notification.about}}</a>
+            <a class="dropdown-item px-3 py-2 notification" href="{{notification.associated_url}}"
+              id="{{notification.associated_url}}-{{notification.id}}">
+              {% if notification.clicked %}
+              {{forloop.counter}}. {{notification.about|safe}}
+
+              {%else%}
+
+              <b>{{forloop.counter}}. {{notification.about|safe}}</b>
+
+              {%endif%}
+            </a>
             <hr class="my-0">
 
             <script>
@@ -104,8 +118,8 @@
         <div class="mx-2">
           <button class="btn btn-danger btn-sm mx-1" type="button" data-toggle="modal"
             data-target="#LoginModal">Login</button>
-          <button class="btn btn-danger btn-sm" type="button" data-toggle="modal"
-            data-target="#RegisterModal" id="register_button">Register</button>
+          <button class="btn btn-danger btn-sm" type="button" data-toggle="modal" data-target="#RegisterModal"
+            id="register_button">Register</button>
         </div>
         {% endif %}
       </ul>
@@ -113,17 +127,17 @@
   </nav>
 
   {% for message in messages %}
-    <div class="alert alert-{{message.tags}} alert-dismissible fade show my-0" role="alert">
-        {% if message.tags == 'danger' %}
-        <strong>Error:</strong> {{message}}
-        {% else %}
-        <strong>{{message.tags}}:</strong> {{message}}
-        {% endif %}
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    {% endfor %}
+  <div class="alert alert-{{message.tags}} alert-dismissible fade show my-0" role="alert">
+    {% if message.tags == 'danger' %}
+    <strong>Error:</strong> {{message}}
+    {% else %}
+    <strong>{{message.tags}}:</strong> {{message}}
+    {% endif %}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
 
   <!-- register Modal -->
   <div class="modal fade" id="RegisterModal" tabindex="-1" role="dialog" aria-labelledby="lendModalLabel"
@@ -255,8 +269,34 @@
           xhr.send(JSON.stringify(data));
         });
       }
-    });
 
+      const elements = document.getElementsByClassName('notification');
+      for (let i = 0; i < elements.length; i++) {
+        elements[i].addEventListener('click', function () {
+          const index = this.id.indexOf("-");
+          var data = {
+            notif_id: this.id.substring(index + 1, this.id.length)
+          }
+
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', this.id.substring(0, index), true);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                // Handle successful response from server
+                console.log('Notification clicked.')
+
+              } else {
+                // Handle error response from server
+                console.error('An error handling notification: ', xhr.statusText);
+              }
+            }
+          };
+          xhr.send(JSON.stringify(data));
+        });
+      }
+    });
 
   </script>
 

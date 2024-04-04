@@ -91,7 +91,7 @@ header {
 #notification_container{
     height: 300px;
     overflow-y: scroll;
-    width: 400px;
+    width: 450px;
 }
 
 #notification_container::-webkit-scrollbar {

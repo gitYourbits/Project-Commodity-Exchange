@@ -5,7 +5,7 @@ from django.utils.timezone import now
 class ChatBox(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages', null=False)
     receiver = models.IntegerField(default=-1, null=False)
-    timeStamp = models.DateField(auto_now_add=True)
+    timeStamp = models.DateField(default=now)
     seen = models.BooleanField(default=False)
     message = models.TextField()
     room = models.CharField(max_length=20, default='1-2')
@@ -22,7 +22,7 @@ class Demand(models.Model):
     price = models.IntegerField(default=0, null=True)
     image = models.ImageField(upload_to='demands/images', null=True, blank=True)
     available = models.BooleanField(default=True)
-    timeStamp = models.DateField(auto_now_add=True)
+    timeStamp = models.DateField(default=now)
     feedback = models.IntegerField(default=0)
 
 class Offering(models.Model):
@@ -33,7 +33,7 @@ class Offering(models.Model):
     price = models.IntegerField(default=0, null=True)
     image = models.ImageField(upload_to='offerings/images', null=True, blank=True)
     available = models.BooleanField(default=True)
-    timeStamp = models.DateField(auto_now_add=True)
+    timeStamp = models.DateField(default=now)
     feedback = models.IntegerField(default=0)
 
 class Deal(models.Model):
@@ -41,7 +41,7 @@ class Deal(models.Model):
     borrower = models.IntegerField(null=False)
     item = models.ForeignKey(Offering, on_delete=models.CASCADE, null=False)
     price = models.IntegerField(default=0)
-    timeStamp = models.DateField(auto_now_add=True)
+    timeStamp = models.DateField(default=now)
     feedback = models.TextField(default='')
     item_returned = models.BooleanField(default=False)
 
@@ -52,7 +52,7 @@ class Grievance(models.Model):
     subject = models.CharField(max_length=100, default='Item damage')
     description = models.TextField(default='')
     resolved = models.BooleanField(default=False)
-    timeStamp = models.DateField(auto_now_add=True)
+    timeStamp = models.DateField(default=now)
     faulty_item_image = models.ImageField(upload_to='grievances/images', null=True, blank=True)
 
 
@@ -61,6 +61,7 @@ class Notification(models.Model):
     associated_url = models.URLField(default='/')
     about = models.TextField(default='Notification')
     seen = models.BooleanField(default=False)
+    clicked = models.BooleanField(default=False)
     
 
 class OtpVerification(models.Model):
