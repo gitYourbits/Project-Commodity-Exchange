@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load humanize %}
 {% block body %}
 
 <div class="row my-4 px-3 ml-5">
@@ -15,7 +15,7 @@
                     <p class="card-title my-0"><b>{{chat.1.first_name}} {{chat.1.last_name}} ({{chat.1.username}}) -
                             {{chat.3.name}}</b>
                     </p>
-                    <p class="card-text my-0">Latest message: {{chat.0.message}}</p>
+                    <p class="card-text my-0">Latest message: {{chat.0.message}} <small class="text-success float-right">{{chat.0.timeStamp | naturaltime}}</small></p>
                 </a>
             </div>
             {% endfor %}
@@ -33,7 +33,7 @@
                     data-sender-id="{{ request.user.id }}" id="message-{{ message.id }}">
                     {% endif %}
 
-                    {{message.message}}
+                    {{message.message}}<br><small class="text-light float-right">- {{message.timeStamp | naturaltime}}</small>
                 </div>
                 {% endfor %}
 

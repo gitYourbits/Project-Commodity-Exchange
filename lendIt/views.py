@@ -121,9 +121,8 @@ def send_otp(mail):
     return otp
 
 
-
 def profile(request):
-    # offering_form = Offer(data=request.POST, files=request.FILES)
+    
     return render(request, 'profile.html')
 
 

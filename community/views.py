@@ -88,7 +88,7 @@ def dealing(request, id):
     item = Offering.objects.filter(id=int(id[0]))[0]
 
     msgs1 = ChatBox.objects.filter(receiver = request.user.id)
-    msgs2 = ChatBox.objects.filter(sender = request.user)
+    msgs2 = ChatBox.objects.filter(sender = request.user.id)
     msgsCombined = list(set(msgs1) | set(msgs2))
 
     chats = {}
@@ -99,12 +99,17 @@ def dealing(request, id):
             chats[room] = []
         chats[room].append(msg)
 
-    for room, chat in chats.items():
-        chat = chat[-1]
-        getting_room_url = chat.room.split('-')
-        chats[room] = [chat, chat.sender if request.user.id!=chat.sender.id else User.objects.filter(id=chat.receiver)[0], f"{getting_room_url[0]}by{getting_room_url[1]}", Offering.objects.filter(id=int(getting_room_url[0]))[0]]
+    chats_sorted = sorted(chats.items(), key=lambda x: max(x[1], key=lambda msg: msg.timeStamp).timeStamp, reverse=True)
 
-    return render(request,'community/dealing.html', {'room_name': room_name, 'msgs': messages, 'username': username, 'id': id_stored, 'notification_receiver': msg_notification_receiver, 'chats': chats, 'item': item, 'chats_token': True})
+    chats = dict(chats_sorted)
+
+    for room, chat in chats.items():
+        chat = sorted(chat, key=lambda msg: msg.timeStamp, reverse=True)
+        getting_room_url = chat[0].room.split('-')
+        
+        chats[room] = [chat[0], chat[0].sender if request.user.id!=chat[0].sender.id else User.objects.filter(id=chat[0].receiver)[0], f"{getting_room_url[0]}by{getting_room_url[1]}", Offering.objects.filter(id=int(getting_room_url[0]))[0]]
+
+    return render(request,'community/dealing.html', {'room_name': room_name, 'msgs': messages[::-1], 'username': username, 'id': id_stored, 'notification_receiver': msg_notification_receiver, 'chats': chats, 'item': item, 'chats_token': True})
 
 
 def deal(request, id):

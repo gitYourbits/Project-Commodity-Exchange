@@ -54,27 +54,24 @@ header {
 
 
 .messageBox {
-    /* flex: 0 0 auto; */ /* Set flex-grow, flex-shrink, and flex-basis */
-    
     max-width: 50%;
     height: fit-content;
     border-radius: 0.7rem;
     border: 1px solid #3a3a40 !important;
     color: #d4e4f9;
-    /* background: #111827; */
-    background: rgb(0, 0, 160);
-    z-index: -1000;
+    background: #111827;
+    /* z-index: -1000; */
 }
 
 .chatbox {
     height: 500px;
     width: 100%;
-    border: 1px solid #3a3a40 !important;
-    border-radius: 0.7rem;
+    border: 2px solid #3a3a40 !important;
+    border-radius: 1rem;
     overflow-y: scroll;
     display: flex;
     flex-direction: column;
-    box-shadow: inset 0 7px 5px -5px white, inset 0 -7px 5px -5px white;
+    /* box-shadow: inset 0 7px 5px -5px white, inset 0 -7px 5px -5px white; */
 }
 
 #message-input{
