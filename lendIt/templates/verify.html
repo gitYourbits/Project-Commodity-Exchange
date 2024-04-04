@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+
+{% if registeration_required %}
+<p class="my-5" style="margin: auto; text-align: center; cursor: pointer;"><button class="btn btn-outline-danger" onclick="$('#register_button').click();">Register</button></p>
+
+{% else %}
+<p class="my-5" style="margin: auto; text-align: center; cursor: pointer;"><button class="btn btn-outline-danger" id="verify">Verify</button></p>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      var verifyOtpButton = document.getElementById('verify');
+
+      if (verifyOtpButton) {
+        verifyOtpButton.addEventListener('click', function () {
+          var otp = prompt("Enter OTP here:");
+          var data = {
+            otp: otp
+          };
+
+          // Send AJAX request to server
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', '/', true);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                // Handle successful response from server
+                window.location.href = '/';
+
+              } else {
+                // Handle error response from server
+                console.error('An error occurred while clearing notifications: ', xhr.statusText);
+              }
+            }
+          };
+          xhr.send(JSON.stringify(data));
+        });
+      }
+    });
+
+  </script>
+{% endblock body %}

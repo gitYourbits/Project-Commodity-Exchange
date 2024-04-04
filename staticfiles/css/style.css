@@ -18,6 +18,14 @@ body::-webkit-scrollbar {
     width: 0;
     height: 0;
 }
+/* .chat-histories::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+} */
+.chat-histories{
+    overflow-y: scroll;
+    width: 80vh;
+}
 
 .navbar {
     background-color: #050c1b !important;
@@ -52,13 +60,13 @@ header {
     border-radius: 0.7rem;
     border: 1px solid #3a3a40 !important;
     color: #d4e4f9;
-    background: #111827;
+    /* background: #111827; */
+    background: rgb(0, 0, 160);
     z-index: -1000;
-    background: blue;
 }
 
 .chatbox {
-    height: 600px;
+    height: 500px;
     width: 100%;
     border: 1px solid #3a3a40 !important;
     border-radius: 0.7rem;

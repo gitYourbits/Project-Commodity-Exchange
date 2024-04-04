@@ -41,6 +41,13 @@
           <a class="nav-link text-{% if borrow_token %}primary{% else %}light{% endif %}"
             href="/community">Borrowing</a>
         </li>
+
+        {% if request.user.is_authenticated %}
+        <li class="nav-item mx-2">
+          <a class="nav-link text-{% if chats_token %}primary{% else %}light{% endif %}"
+            href="/community/chats">chats</a>
+        </li>
+        {% endif %}
       </ul>
 
       <ul class="navbar-nav ml-auto">
@@ -98,14 +105,14 @@
           <button class="btn btn-danger btn-sm mx-1" type="button" data-toggle="modal"
             data-target="#LoginModal">Login</button>
           <button class="btn btn-danger btn-sm" type="button" data-toggle="modal"
-            data-target="#RegisterModal">Register</button>
+            data-target="#RegisterModal" id="register_button">Register</button>
         </div>
         {% endif %}
       </ul>
     </div>
   </nav>
 
-  <!-- {% for message in messages %}
+  {% for message in messages %}
     <div class="alert alert-{{message.tags}} alert-dismissible fade show my-0" role="alert">
         {% if message.tags == 'danger' %}
         <strong>Error:</strong> {{message}}
@@ -116,7 +123,7 @@
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-    {% endfor %} -->
+    {% endfor %}
 
   <!-- register Modal -->
   <div class="modal fade" id="RegisterModal" tabindex="-1" role="dialog" aria-labelledby="lendModalLabel"

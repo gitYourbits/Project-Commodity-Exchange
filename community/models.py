@@ -63,3 +63,7 @@ class Notification(models.Model):
     seen = models.BooleanField(default=False)
     
 
+class OtpVerification(models.Model):
+    parent = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    status = models.BooleanField(default=False)
+    otp = models.CharField(max_length=6, null=False)

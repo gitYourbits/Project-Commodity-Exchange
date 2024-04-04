@@ -2,14 +2,31 @@
 {% load static %}
 {% block body %}
 
-<div class="row mx-5 my-5 pl-5" onload="scrollToBottom()">
-    <div class="chat-section col-md-6">
-        <h4 class="text-light">Your chat with {{username}}</h4>
+<div class="row my-4 px-3 ml-5" onload="scrollToBottom()">
+    <div class="col-md-4" id="chat-history-column">
+        <h5 class="text-light mb-3" style="text-align: center;">Chat Histories</h5>
+        <div class="chat-histories">
+            {% for room, chat in chats.items %}
+            <div class="card" style="background: #111827 !important; border: 1px solid #3a3a40 !important;">
+
+                <a href="/community/deal/{{chat.2}}/ongoing" class="card-body"
+                    style="color: #d4e4f9; text-decoration: none;">
+
+                    <p class="card-title my-0"><b>{{chat.1.first_name}} {{chat.1.last_name}} ({{chat.1.username}}) - {{chat.3.name}}</b>
+                    </p>
+                    <p class="card-text my-0">Latest message: {{chat.0.message}}</p>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="chat-section col-md-7">
+        <h5 class="text-light">Your chat with {{username}} for item "{{item.name}}"</h5>
         <div class="chatbox" id="chatbox">
-            {% for message in messages %}
+            {% for message in msgs %}
             {% if message.sender.id == request.user.id %}
-            <div class="messageBox px-3 my-1 py-1 mr-2" style="margin-left: auto;" data-sender-id="{{ request.user.id }}"
-                id="message-{{ message.id }}">
+            <div class="messageBox px-3 my-1 py-1 mr-2" style="margin-left: auto;"
+                data-sender-id="{{ request.user.id }}" id="message-{{ message.id }}">
                 {% else %}
                 <div class="messageBox px-3 my-1 py-1 ml-2" style="margin-right: auto;"
                     data-sender-id="{{ request.user.id }}" id="message-{{ message.id }}">
@@ -27,6 +44,18 @@
         </div>
 
         <script>
+
+            $(document).ready(function () {
+                $('.card-body').hover(
+                    function () {
+                        $(this).children().addClass('text-primary');
+                    },
+                    function () {
+                        $(this).children().removeClass('text-primary');
+                    }
+                );
+            });
+
             function scrollToBottom() {
                 var div = document.getElementById("chatbox");
                 div.scrollTop = div.scrollHeight;
@@ -76,10 +105,12 @@
 
             sendButton.addEventListener('click', function () {
                 const message = messageInput.value;
-                socket.send(JSON.stringify({ message: message,
-                offering_id: '{{id}}',
-                notification_receiver: '{{notification_receiver}}'}));
-                
+                socket.send(JSON.stringify({
+                    message: message,
+                    offering_id: '{{id}}',
+                    notification_receiver: '{{notification_receiver}}'
+                }));
+
                 messageInput.value = '';
             });
 
@@ -89,15 +120,15 @@
                 }
             });
         </script>
-</div>
+    </div>
 
-<div class="dealing" style="display: block; align-items: center; text-align: center; margin: auto;">
-    <button id="close_deal" class="btn btn-outline-danger">Close Deal</button>
-    <script>
-        $('#close_deal').click(function(){
-            document.location = `/community/deal/{{id}}/closing`;
-        })
-    </script>
-</div>
+    <div class="dealing" style="display: block; align-items: center; text-align: center; margin: auto;">
+        <button id="close_deal" class="btn btn-outline-danger">Close Deal</button>
+        <script>
+            $('#close_deal').click(function () {
+                document.location = `/community/deal/{{id}}/closing`;
+            })
+        </script>
+    </div>
 
     {% endblock body %}

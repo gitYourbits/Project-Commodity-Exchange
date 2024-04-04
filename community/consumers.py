@@ -10,7 +10,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.sender = self.scope['user']
         self.room_name = self.scope['url_route']['kwargs'].get('room_name')
         self.rec = self.room_name.split('-')
-        if(self.sender.id) == self.rec[1]:
+        if(self.sender.id) == int(self.rec[1]):
             self.receiver = await self.get_receiver(int(self.rec[-1]))
         else:
             self.receiver = await self.get_receiver(int(self.rec[1]))
@@ -58,7 +58,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def create_message(self, message_content, offering_id, notification_receiver_id):
         message = ChatBox.objects.create(sender=self.sender, receiver=self.receiver.id, message=message_content, room=self.room_name)
 
-        notification = Notification(parent = User.objects.filter(id=notification_receiver_id)[0], associated_url = f'/community/deal/{offering_id}by{self.receiver.id}/ongoing', about=f'You have a new message from {self.sender.username}')
+        notification = Notification(parent = User.objects.filter(id=notification_receiver_id)[0], associated_url = f'/community/deal/{offering_id}by{self.rec[1]}/ongoing', about=f'You have a new message from {self.sender.username}')
 
         notification.save()
 

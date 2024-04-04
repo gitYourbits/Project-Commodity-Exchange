@@ -4,22 +4,43 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.mail import send_mail
-from community.models import Demand, Offering, Deal, Grievance, Notification
+from community.models import Demand, Offering, Deal, Grievance, Notification, OtpVerification
 from .form import Offer, AskFor, PutGrievance
 from django.views.decorators.csrf import csrf_exempt
 import json
 
-
+@csrf_exempt
 def index(request):
+    if request.user.is_authenticated:
+        verifier = OtpVerification.objects.filter(parent=request.user.id)[0]
+    else:
+        messages.info(request, 'Register to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
 
-    demand_form = AskFor()
-    offering_form = Offer()
+    if request.method == 'POST':
+        raw_data = request.body.decode('utf-8')
+        data = json.loads(raw_data)
+        data = data['otp']
 
-    latest_ongoing_deals = Deal.objects.all()[0:6]
-    categories = Offering.objects.values_list('category', flat=True).distinct()
-    notifications = Notification.objects.filter(parent=request.user.id, seen=False)
+        if verifier.otp == data:
+            verifier.status = True
+            verifier.save()
+            messages.success(request, 'Verification successful. Enjoy the services!')
+        else:
+            messages.error(request, 'OTP verification failed - Wrong OTP.')
+        return HttpResponse('Verification failed...')
+    else:
+        if verifier.status:
+            demand_form = AskFor()
+            offering_form = Offer()
 
-    return render(request, 'index.html', {"index_token": True, 'demand_form': demand_form, 'offering_form': offering_form, "deals": latest_ongoing_deals, 'categories': categories, 'notifications': notifications})
+            latest_ongoing_deals = Deal.objects.all()[0:6]
+            categories = Offering.objects.values_list('category', flat=True).distinct()
+            notifications = Notification.objects.filter(parent=request.user.id, seen=False)
+
+            return render(request, 'index.html', {"index_token": True, 'demand_form': demand_form, 'offering_form': offering_form, "deals": latest_ongoing_deals, 'categories': categories, 'notifications': notifications})
+        else:
+            return render(request, 'verify.html', {})
 
 
 @csrf_exempt
@@ -70,9 +91,11 @@ def register(request):
             
             user = authenticate(username = username, password = pass1)
             if user is not None:
-                send_otp(email)
+                otp = send_otp(email)
+                verifier = OtpVerification(parent=request.user.id, otp=otp).save()
                 login(request, user)
-                messages.success(request, f'Account created successfully! An OTP has sent to your registered email, you will need that otp to verify your account. Note your username: "{username}"')
+ 
+                messages.success(request, f'Account created successfully! An OTP has sent to your registered email, you will need that otp to verify your account. Note your username: "{username}"\nNote: Verification is useful for User security.')
                 return redirect(f'/')
 
         except Exception as e:
@@ -95,6 +118,7 @@ def send_otp(mail):
         [mail],  # Recipient's email address
         fail_silently=False,
     )
+    return otp
 
 
 
