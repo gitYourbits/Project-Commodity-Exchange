@@ -28,6 +28,8 @@ urlpatterns = [
     path('login/', views.loginHandle, name='user_login'),
     path('logout/', views.logoutHandle, name='user_login'),
     path('profile/', views.profile, name='user_profile'),
+    path('profile/handle-payment/', views.handle_payment, name='handle_payment'),
+    path('profile/payment-verification/', views.verify_payment, name='verify_payment'),
     path('clear-notifications/', views.clear_notifs, name='clear_notifications'),
 
     path('community/', include('community.urls')),

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+{% block body %}
+<div class="m-5">
+    <h5 class="text-danger mb-5">Payment in process... Please don't go back or refresh the page.</h5>
+    <form action="/profile/payment-verification/" method="post" id="payment_form" style="text-align: center;">{% csrf_token %}
+
+        <script src="https://checkout.razorpay.com/v1/checkout.js" data-key="rzp_test_RHVvhCMiKWJeS1"
+            data-amount="{{payment.amount}}" data-currency="{{payment.currency}}" data-order_id="{{payment.id}}"
+            data-buttontext="Proceed" data-name="BorrowBarterBridge" data-description="Lend and borrow your essentials"
+            data-image="https://example.com/your_logo.jpg" data-prefill.name="{{request.user.username}}"
+            data-prefill.email="{{request.user.email}}" data-theme.color="blue"></script>
+
+        <input type="hidden" name="grievance_id" id="grievance_id" value="{{g_id}}">
+        <input type="hidden" name="user_id" id="user_id" value="{{request.user.id}}">
+        <input type="hidden" data-custom="Hidden Element" name="hidden">
+    </form>
+</div>
+{% endblock body %}

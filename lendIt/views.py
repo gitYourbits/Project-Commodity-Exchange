@@ -4,10 +4,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.core.mail import send_mail
-from community.models import Demand, Offering, Deal, Grievance, Notification, OtpVerification
+from community.models import Demand, Offering, Deal, Grievance, Notification, OtpVerification, Payment
 from .form import Offer, AskFor, PutGrievance
 from django.views.decorators.csrf import csrf_exempt
 import json
+import razorpay
 
 
 @csrf_exempt
@@ -178,7 +179,7 @@ def profile(request):
     notifications = Notification.objects.filter(parent=request.user.id, seen=False)
     borrowings = Deal.objects.filter(borrower=request.user.id)
     lendings = Deal.objects.filter(lender=request.user.id)
-    grievances = Grievance.objects.filter(defaulter=request.user.id)
+    grievances = Grievance.objects.filter(defaulter=request.user.id, resolved=False)
 
     grievance_form = PutGrievance()
 
@@ -212,4 +213,69 @@ def logoutHandle(request):
         messages.info(request, "No user has logged in yet")
         return redirect('/')
 
+
+def handle_payment(request):
+    if request.method=='POST':
+        g_id = request.POST.get('grievance_id')
+        g_id = int(g_id)
+        related_grievance = Grievance.objects.get(id=g_id)
+
+        # payment gateway code starts here-----
+        client = razorpay.Client(auth=('rzp_test_RHVvhCMiKWJeS1', '8IjZtvP0v4SNjhfZzLgSNQFI'))
+
+        response_payment = client.order.create(dict(amount=related_grievance.deal.item.price*100, currency='INR'))
+
+        if response_payment['status'] == 'created':
+            if len(Payment.objects.filter(for_grievance=related_grievance.id)) != 0:
+                Payment.objects.filter(for_grievance=related_grievance).delete()
+
+            Payment(for_grievance=related_grievance, razorpay_order_id=response_payment['id']).save()
+        # payment gateway code ends here-----
+            
+            return render(request, 'handle_payment.html', {'payment': response_payment, 'g_id': g_id})
+            
+        messages.error(request, 'We are unable to process the payment right now. Please try again after sometime.')
+        return redirect('/profile')
+    return redirect('/')
+
+@csrf_exempt
+def verify_payment(request):
+    if request.method=='POST':
+        response = request.POST
+        # print(response)
+
+        client = razorpay.Client(auth=('rzp_test_RHVvhCMiKWJeS1', '8IjZtvP0v4SNjhfZzLgSNQFI'))
+
+        try:
+            client.utility.verify_payment_signature({
+            'razorpay_order_id': response['razorpay_order_id'],
+            'razorpay_payment_id': response['razorpay_payment_id'],
+            'razorpay_signature': response['razorpay_signature']
+            })
+
+            instance = Payment.objects.get(razorpay_order_id=response['razorpay_order_id'])
+            instance.razorpay_payment_id = response['razorpay_payment_id']
+            instance.razorpay_signature = response['razorpay_signature']
+            instance.paid = True
+            instance.save()
+
+            g_id = request.POST.get("grievance_id")
+            u_id = request.POST.get("user_id")
+            
+            related_grievance = Grievance.objects.get(id=int(g_id))
+            
+            related_grievance.resolved = True
+            related_grievance.save()
+
+            g_count = OtpVerification.objects.get(parent=int(u_id))
+            g_count.grievance_count-=1
+            g_count.save()
+
+            messages.success(request, f'Your complaint of {related_grievance.deal.item.name} from {related_grievance.deal.lender.username} has been resolved. Net amount payed: {related_grievance.deal.item.price}')
+
+            return redirect('/')
+        except Exception as e:
+            messages.error(request, f"Your payment failed unexpectedly. Don't worry! your money is safe - Error: {e}")
+            return redirect('/profile')
+    return redirect('/')
 

@@ -115,21 +115,31 @@
         <h5 class="text-light">My Character</h5>
 
         {% if grievances|length == 0 %}
-        <div class="alert alert-success mt-4 mb-5 mx-4" role="alert">No user Complaints against you.<br><b>Character
+        <div class="alert alert-success mt-4 mb-5 mx-4" role="alert">No user complaints against you.<br><b>Character
                 Status: Good</b></div>
 
         {%else%}
+        <p class="text-danger">(Pay all to get unblocked)</p>
         {% for grievance in grievances %}
-        <div class="alert alert-warning mt-4 mb-5 mx-4" role="alert">
+        <div class="alert alert-warning mt-4 mb-3 mx-4" role="alert">
             You have a complaint against your purchase {{grievance.deal.id}}: <br>{<br><b>By:</b>
             {{grievance.deal.lender.username}} <br><b>Item:</b> {{grievance.deal.item.name}} <br><b>Complaint:</b>
-            {{grievance.description}}<br>}
+            {{grievance.description}}<br><b>Net Payable Amount:</b> Rs. {{grievance.deal.item.price}}<br>}
 
             <div style="text-align: center;">
-                <a href="" class="btn btn-outline-danger mt-3 mb-2">Pay to get unblocked</a>
+                <form action="/profile/handle-payment/" method="post">{% csrf_token %}
+
+                    <input type="hidden" name="grievance_id" id="g_{{grievance.id}}" value="{{grievance.id}}">
+
+                    <button type="submit" class="btn btn-outline-success mt-3 mb-2">Pay</button>
+                </form>
             </div>
         </div>
         {%endfor%}
+
+        <div class="alert alert-danger my-5 mx-4" role="alert">Number of user complaints:
+            {{grievances|length}}<br><b>Character
+                Status: Bad</b></div>
         {%endif%}
     </div>
 </div>

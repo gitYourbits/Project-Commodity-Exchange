@@ -1,9 +1,10 @@
 from django.contrib import admin
-from .models import ChatBox, Demand, Offering, Deal, Grievance, Notification, OtpVerification
+from .models import ChatBox, Demand, Offering, Deal, Grievance, Notification, OtpVerification, Payment
 
 # Register your models here.
 
 admin.site.register(OtpVerification)
+admin.site.register(Payment)
 admin.site.register(ChatBox)
 admin.site.register(Demand)
 admin.site.register(Offering)
