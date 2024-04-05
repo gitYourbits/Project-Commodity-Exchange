@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .models import ChatBox, Demand, Offering, Deal, Grievance, Notification
-from lendIt.form import Offer, AskFor, PutGrievance
+from lendIt.form import Offer, AskFor
 from django.views.decorators.csrf import csrf_exempt
 import json
 
@@ -27,7 +27,11 @@ def borrow(request):
     if request.method=='POST':
         offering_form = Offer(data=request.POST, files=request.FILES)
         if offering_form.is_valid():
-            offering_form.save()
+            offering_instance = offering_form.save(commit=False)
+            offering_instance.lender = request.user
+            offering_instance.save()
+
+            messages.success(request, 'Your offer has been posted successfully! Here are more demands that you may fulfill.')
         return redirect('/community/lend')
 
     else:
@@ -45,7 +49,10 @@ def lend(request):
     if request.method=='POST':
         demand_form = AskFor(data=request.POST, files=request.FILES)
         if demand_form.is_valid():
-            demand_form.save()
+            demand_instance = demand_form.save(commit=False)
+            demand_instance.borrower = request.user
+            demand_instance.save()
+            messages.success(request, 'Your demand has been posted! Here are some offers that you may like.')
         return redirect('/community/borrow')
 
     else:

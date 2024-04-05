@@ -2,6 +2,96 @@
 {% load static %}
 {% block body %}
 
-<p class="text-light my-5" style="text-align: center; margin: auto;"><b>Here will be our profile</b></p>
+<div class="container">
+    <div id="personal_info my-5">
+        <h4 class="text-light">Personal Information</h4>
+
+        <h6 class="text-light">Username -> {{request.user.username}}</h6>
+        <h6 class="text-light">Name -> {{request.user.first_name}} {{request.user.last_name}}</h6>
+        <h6 class="text-light">Registered E-mail -> {{request.user.email}}</h6>
+        <a href="#" class="btn btn-outline-danger">Change Password</a>
+    </div>
+
+    <div class="row my-5 mx-1"
+        style="background: #111827 !important; border: 1px solid #3a3a40 !important; border-radius: 1.5rem;">
+
+        {% if borrowings|length == 0 %}
+        <p class="text-light" style="margin: auto; text-align: center;"></p>No deals available!
+        {% else %}
+        {% for borrowing in borrowings %}
+        <div class="col-md-4 my-4">
+            <div class="card"
+                style="background: #111827 !important; border: 1px solid #3a3a40 !important; border-radius: 1rem;">
+
+                <div class="card-body" style="color: #d4e4f9;">
+                    <h5 class="card-title">{{borrowing.item.name}}</h5>
+                    <p class="card-text">{{borrowing.timeStamp}}</p>
+                    <button type="button" class="btn btn-light mt-3"
+                        onclick="document.location = '/community/deal/{{borrowing.id}}/closed'">
+                        View
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="row my-5 mx-1"
+        style="background: #111827 !important; border: 1px solid #3a3a40 !important; border-radius: 1.5rem;">
+
+        {% if lendings|length == 0 %}
+        <p class="text-light" style="margin: auto; text-align: center;"></p>No deals available!
+        {% else %}
+        {% for lending in lendings %}
+        <div class="col-md-4 my-4">
+            <div class="card"
+                style="background: #111827 !important; border: 1px solid #3a3a40 !important; border-radius: 1rem;">
+
+                <div class="card-body" style="color: #d4e4f9;">
+                    <h5 class="card-title">{{lending.item.name}}</h5>
+                    <p class="card-text">{{lending.timeStamp}}</p>
+
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" role="button" data-toggle="collapse"
+                                data-target="#grievanceForm-{{lending.id}}">
+                                <b>Put Grievance</b>
+                            </a>
+
+                            <div class="collapse" id="grievanceForm-{{lending.id}}">
+                                <form class="row g-5 mt-1" action="/profile/" method="post"
+                                    enctype="multipart/form-data"> {% csrf_token %}
+
+                                    <div class="col-md-12 my-3">
+                                        {{grievance_form.as_p}}
+
+                                        <input type="hidden" name="dealId" id="dealId-{{lending.id}}"
+                                            value="{{lending.id}}">
+                                    </div>
+
+                                    <div class="col-12 my-2">
+                                        <button type="submit"
+                                            class="btn btn-outline-light btn-sm rounded-pill my-1">Upload</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+    <div id="my_character my-5">
+        {% for grievance in grievances %}
+        <div class="alert alert-warning" role="alert">
+            You have a complaint against your purchase {{grievance.deal.id}}: <br>{<br><b>By:</b> {{grievance.deal.lender.username}} <br><b>Item:</b> {{grievance.deal.item.name}} <br><b>Complaint:</b> {{grievance.description}}<br>}
+        </div>
+        {%endfor%}
+    </div>
+</div>
 
 {% endblock body %}

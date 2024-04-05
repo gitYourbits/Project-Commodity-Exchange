@@ -6,7 +6,7 @@ class AskFor(forms.ModelForm):
     
     class Meta:
         model = Demand
-        exclude = ['feedback', 'available', 'timeStamp', 'price']
+        exclude = ['feedback', 'available', 'timeStamp', 'price', 'borrower']
         
     def __init__(self, *args, **kwargs):
         super(AskFor, self).__init__(*args, **kwargs)
@@ -20,7 +20,7 @@ class Offer(forms.ModelForm):
     
     class Meta:
         model = Offering
-        exclude = ['feedback', 'available', 'timeStamp', 'price']
+        exclude = ['feedback', 'available', 'timeStamp', 'price', 'lender']
         
     def __init__(self, *args, **kwargs):
         super(Offer, self).__init__(*args, **kwargs)
@@ -34,7 +34,7 @@ class PutGrievance(forms.ModelForm):
     
     class Meta:
         model = Grievance
-        exclude = ['count', 'resolved' ,'timeStamp']
+        exclude = ['count', 'resolved' ,'timeStamp', 'defaulter', 'deal']
         
     def __init__(self, *args, **kwargs):
         super(PutGrievance, self).__init__(*args, **kwargs)

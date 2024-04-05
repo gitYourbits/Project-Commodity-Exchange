@@ -51,7 +51,7 @@ class Deal(models.Model):
 
 class Grievance(models.Model):
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, null=True)
-    count = models.IntegerField(default=0)
+    defaulter = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     subject = models.CharField(max_length=100, default='Item damage')
     description = models.TextField(default='')
     resolved = models.BooleanField(default=False)
@@ -68,6 +68,7 @@ class Notification(models.Model):
     
 
 class OtpVerification(models.Model):
-    parent = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
+    parent = models.OneToOneField(User, on_delete=models.CASCADE)
     status = models.BooleanField(default=False)
     otp = models.CharField(max_length=6, null=False)
+    grievance_count = models.IntegerField(default=0)

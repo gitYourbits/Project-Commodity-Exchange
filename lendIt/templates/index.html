@@ -54,17 +54,17 @@
 
         <div class="modal-body">
           <!-- Lend Form -->
-          <form class="row g-5 mt-1" action="/community/borrow/" method="post"
-            enctype="multipart/form-data"> {% csrf_token %}
+          <form class="row g-5 mt-1" action="/community/borrow/" method="post" enctype="multipart/form-data"> {%
+            csrf_token %}
 
             <div class="col-md-12 my-3">
-                {{offering_form.as_p}}
+              {{offering_form.as_p}}
             </div>
 
             <div class="col-12 my-2">
-                <button type="submit" class="btn btn-outline-light btn-sm rounded-pill my-1">Upload</button>
+              <button type="submit" class="btn btn-outline-light btn-sm rounded-pill my-1">Upload</button>
             </div>
-        </form>
+          </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -87,15 +87,15 @@
 
         <div class="modal-body">
           <!-- Borrow Form -->
-          <form class="row g-5 mt-1" action="/community/lend/" method="post"
-            enctype="multipart/form-data"> {% csrf_token %}
+          <form class="row g-5 mt-1" action="/community/lend/" method="post" enctype="multipart/form-data"> {%
+            csrf_token %}
 
             <div class="col-md-12 my-3">
-                {{demand_form.as_p}}
+              {{demand_form.as_p}}
             </div>
 
             <div class="col-12 my-2">
-                <button type="submit" class="btn btn-outline-light btn-sm rounded-pill my-1">Upload</button>
+              <button type="submit" class="btn btn-outline-light btn-sm rounded-pill my-1">Upload</button>
             </div>
           </form>
         </div>
@@ -110,8 +110,8 @@
   <h5 class="my-4" style="color: #d4e4f9;">Latest deals</h5>
   <div class="row">
 
-    {% if deals|length  == 0 %}
-      <p class="text-light" style="margin: auto; text-align: center;"></p>No deals available!
+    {% if deals|length == 0 %}
+    <p class="text-light" style="margin: auto; text-align: center;"></p>No deals available!
     {% else %}
     {% for deal in deals %}
     <div class="col-md-4 my-4">
@@ -120,7 +120,8 @@
         <div class="card-body" style="color: #d4e4f9;">
           <h5 class="card-title">{{deal.item.name}}</h5>
           <p class="card-text">{{deal.timeStamp}}</p>
-          <button type="button" class="btn btn-light mt-3" onclick="document.location = '/community/deal/{{deal.id}}/closed'">
+          <button type="button" class="btn btn-light mt-3"
+            onclick="document.location = '/community/deal/{{deal.id}}/closed'">
             View
           </button>
         </div>
@@ -135,8 +136,8 @@
   <div class="row my-2 mx-1"
     style="background: #111827 !important; border: 1px solid #3a3a40 !important; border-radius: 0.5rem;">
 
-    {% if categories|length  == 0 %}
-      <p class="text-light" style="margin: auto; text-align: center;"></p>No category added yet!
+    {% if categories|length == 0 %}
+    <p class="text-light" style="margin: auto; text-align: center;"></p>No category added yet!
     {% else %}
 
     {% for category in categories %}
@@ -150,4 +151,4 @@
 
 </div>
 
-    {% endblock body %}
+{% endblock body %}

@@ -9,6 +9,7 @@ from .form import Offer, AskFor, PutGrievance
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+
 @csrf_exempt
 def index(request):
     if request.user.is_authenticated:
@@ -59,6 +60,7 @@ def clear_notifs(request):
         return HttpResponse("Cleared Notifications...")
 
 
+
 def register(request):
     if request.method == 'POST':
         fname = request.POST.get('fname', '')
@@ -92,7 +94,11 @@ def register(request):
             user = authenticate(username = username, password = pass1)
             if user is not None:
                 otp = send_otp(email)
-                verifier = OtpVerification(parent=request.user.id, otp=otp).save()
+                verifier = OtpVerification()
+                verifier.parent = request.user.id
+                verifier.otp=otp
+                verifier.save()
+                
                 login(request, user)
  
                 messages.success(request, f'Account created successfully! An OTP has sent to your registered email, you will need that otp to verify your account. Note your username: "{username}"\nNote: Verification is useful for User security.')
@@ -122,8 +128,32 @@ def send_otp(mail):
 
 
 def profile(request):
-    
-    return render(request, 'profile.html')
+    if request.method == "POST":
+        deal_id = request.POST.get('dealId')
+        grievance_form = PutGrievance(data=request.POST, files=request.FILES)
+
+        if grievance_form.is_valid():
+            grievance_instance = grievance_form.save(commit=False)
+            grievance_instance.deal = Deal.objects.get(id=int(deal_id))
+            grievance_instance.save()
+            grievance_instance.defaulter = User.objects.get(id = grievance_instance.deal.borrower)
+            grievance_instance.save()
+
+            griev_count = OtpVerification.objects.get(parent=User.objects.get(id = grievance_instance.deal.borrower))
+            griev_count.grievance_count+=1
+            griev_count.save()
+            
+        return redirect('/profile')
+
+    notifications = Notification.objects.filter(parent=request.user.id, seen=False)
+    borrowings = Deal.objects.filter(borrower=request.user.id)
+    lendings = Deal.objects.filter(lender=request.user.id)
+    grievances = Grievance.objects.filter(defaulter=request.user.id)
+
+    grievance_form = PutGrievance()
+
+    parameters = {'notifications': notifications, 'borrowings': borrowings, 'lendings': lendings, 'grievance_form': grievance_form, 'grievances': grievances}
+    return render(request, 'profile.html', parameters)
 
 
 def loginHandle(request):
