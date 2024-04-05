@@ -3,16 +3,37 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import ChatBox, Demand, Offering, Deal, Grievance, Notification
+from .models import ChatBox, Demand, Offering, Deal, Grievance, Notification, OtpVerification
 from lendIt.form import Offer, AskFor
 from django.views.decorators.csrf import csrf_exempt
 import json
 
 
 def index(request):
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
+
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
+    if verifier.grievance_count>0:
+        messages.warning(request, 'You have complaints from users. Your account is blocked untill you resolve them.')    
+        return redirect('/profile')
     return redirect('/community/borrow')
 
+
 def chats(request):
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
+
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
+
     checker = ChatBox.objects.filter(sender=request.user)
     checker = [i for i in checker]
     if len(ChatBox.objects.filter(receiver=request.user.id))!=0:
@@ -22,6 +43,7 @@ def chats(request):
         return redirect('/')
     room = checker[0].room.split('-')
     return redirect(f'/community/deal/{room[0]}by{room[1]}/ongoing')
+
 
 def borrow(request):
     if request.method=='POST':
@@ -34,16 +56,28 @@ def borrow(request):
             messages.success(request, 'Your offer has been posted successfully! Here are more demands that you may fulfill.')
         return redirect('/community/lend')
 
-    else:
-        categories = Offering.objects.values('category').distinct()
-        offerings = {}
-        # Iterate over distinct categories
-        for category in categories:
-            # Filter products by the current category
-            category_wise_items = Offering.objects.filter(category=category['category']).exclude(lender=request.user.id)
-            # Store the products in the dictionary with the category name as key
-            offerings[category['category']] = category_wise_items
-        return render(request, 'community/borrow.html', {"borrow_token": True, "offerings": offerings})
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
+
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
+    if verifier.grievance_count>0:
+        messages.warning(request, 'You have complaints from users. Your account is blocked untill you resolve them.')    
+        return redirect('/profile')
+
+    categories = Offering.objects.values('category').distinct()
+    offerings = {}
+    # Iterate over distinct categories
+    for category in categories:
+        # Filter products by the current category
+        category_wise_items = Offering.objects.filter(category=category['category']).exclude(lender=request.user.id)
+        # Store the products in the dictionary with the category name as key
+        offerings[category['category']] = category_wise_items
+    return render(request, 'community/borrow.html', {"borrow_token": True, "offerings": offerings, "notifications": Notification.objects.filter(parent=request.user.id, seen=False)})
+
 
 def lend(request):
     if request.method=='POST':
@@ -55,16 +89,28 @@ def lend(request):
             messages.success(request, 'Your demand has been posted! Here are some offers that you may like.')
         return redirect('/community/borrow')
 
-    else:
-        categories = Demand.objects.values('category').distinct()
-        demands = {}
-        # Iterate over distinct categories
-        for category in categories:
-            # Filter products by the current category
-            category_wise_items = Demand.objects.filter(category=category['category']).exclude(borrower=request.user.id)
-            # Store the products in the dictionary with the category name as key
-            demands[category['category']] = category_wise_items
-        return render(request, 'community/lend.html', {"lend_token": True, "demands": demands})
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
+
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
+    if verifier.grievance_count>0:
+        messages.warning(request, 'You have complaints from users. Your account is blocked untill you resolve them.')    
+        return redirect('/profile')
+
+    categories = Demand.objects.values('category').distinct()
+    demands = {}
+    # Iterate over distinct categories
+    for category in categories:
+        # Filter products by the current category
+        category_wise_items = Demand.objects.filter(category=category['category']).exclude(borrower=request.user.id)
+        # Store the products in the dictionary with the category name as key
+        demands[category['category']] = category_wise_items
+    return render(request, 'community/lend.html', {"lend_token": True, "demands": demands, "notifications": Notification.objects.filter(parent=request.user.id, seen=False)})
+
 
 @csrf_exempt
 def dealing(request, id):
@@ -78,6 +124,15 @@ def dealing(request, id):
         this_notif.save()
 
         return HttpResponse('Notification clicked...')
+
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
+
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
 
     id_stored = id
     id=id.split('by')
@@ -116,34 +171,71 @@ def dealing(request, id):
         
         chats[room] = [chat[0], chat[0].sender if request.user.id!=chat[0].sender.id else User.objects.filter(id=chat[0].receiver)[0], f"{getting_room_url[0]}by{getting_room_url[1]}", Offering.objects.filter(id=int(getting_room_url[0]))[0]]
 
-    return render(request,'community/dealing.html', {'room_name': room_name, 'msgs': messages[::-1], 'username': username, 'id': id_stored, 'notification_receiver': msg_notification_receiver, 'chats': chats, 'item': item, 'chats_token': True})
+    return render(request,'community/dealing.html', {'room_name': room_name, 'msgs': messages[::-1], 'username': username, 'id': id_stored, 'notification_receiver': msg_notification_receiver, 'chats': chats, 'item': item, 'chats_token': True, 'notifications': Notification.objects.filter(parent=request.user.id, seen=False)})
 
 
 def deal(request, id):
-    deal = Deal.objects.filter(id=int(id))[0]
-    return render(request, 'community/deal.html', {'deal': deal})
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
 
-def closing_deal(reqeust, id):
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
+    if verifier.grievance_count>0:
+        messages.warning(request, 'You have complaints from users. Your account is blocked untill you resolve them.')    
+        return redirect('/profile')
+
+    deal = Deal.objects.filter(id=int(id))[0]
+    return render(request, 'community/deal.html', {'deal': deal, 'notifications': Notification.objects.filter(parent=request.user.id, seen=False)})
+
+
+def closing_deal(request, id):
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
+
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
+    if verifier.grievance_count>0:
+        messages.warning(request, 'You have complaints from users. Your account is blocked untill you resolve them.')    
+        return redirect('/profile')
+
     id = id.split('by')
     item = Offering.objects.filter(id=int(id[0]))[0]
     deal = Deal(lender = item.lender, borrower=int(id[-1]), item=item, price=item.price)
     deal.save()
     return redirect('/community/deal/{}/closed'.format(deal.id))
 
+
 def create_offering(request, id):
-    if request.user.is_authenticated:
-        id=int(id)
-        demand = Demand.objects.filter(id=id)[0]
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
 
-        offering = Offering.objects.filter(lender=request.user, name=demand.name)
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
+    if verifier.grievance_count>0:
+        messages.warning(request, 'You have complaints from users. Your account is blocked untill you resolve them.')    
+        return redirect('/profile')
 
-        if len(offering)==0:
-            offering = Offering(lender = request.user, name = demand.name, category=demand.category, description=demand.description, price=demand.price, image=demand.image)
-            offering.save()
+    id=int(id)
+    demand = Demand.objects.filter(id=id)[0]
 
-            notification = Notification(parent=demand.borrower, associated_url=f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing/', about=f'You have an offering from {offering.lender.username}')
-            notification.save()
+    offering = Offering.objects.filter(lender=request.user, name=demand.name)
 
-            return redirect(f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing')
-        return redirect(f'/community/deal/{offering[0].id}by{demand.borrower.id}/ongoing')
+    if len(offering)==0:
+        offering = Offering(lender = request.user, name = demand.name, category=demand.category, description=demand.description, price=demand.price, image=demand.image)
+        offering.save()
+
+        notification = Notification(parent=demand.borrower, associated_url=f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing/', about=f'You have an offering from {offering.lender.username}')
+        notification.save()
+
+        return redirect(f'/community/deal/{offering.id}by{demand.borrower.id}/ongoing')
+    return redirect(f'/community/deal/{offering[0].id}by{demand.borrower.id}/ongoing')
 

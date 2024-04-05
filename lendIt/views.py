@@ -13,9 +13,19 @@ import json
 @csrf_exempt
 def index(request):
     if request.user.is_authenticated:
-        verifier = OtpVerification.objects.filter(parent=request.user.id)[0]
+        verifier = OtpVerification.objects.get(parent=request.user.id)
+
+        if not verifier.status:
+            messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+            return render(request, 'verify.html')
+
+        if verifier.grievance_count>0:
+            messages.warning(request, 'You have complaints from users. Your account is blocked untill you resolve them.')
+            
+            return redirect('/profile')
+
     else:
-        messages.info(request, 'Register to enjoy services!')
+        messages.info(request, 'Register or login to enjoy services!')
         return render(request, 'verify.html', {'registeration_required': True})
 
     if request.method == 'POST':
@@ -30,18 +40,16 @@ def index(request):
         else:
             messages.error(request, 'OTP verification failed - Wrong OTP.')
         return HttpResponse('Verification failed...')
-    else:
-        if verifier.status:
-            demand_form = AskFor()
-            offering_form = Offer()
 
-            latest_ongoing_deals = Deal.objects.all()[0:6]
-            categories = Offering.objects.values_list('category', flat=True).distinct()
-            notifications = Notification.objects.filter(parent=request.user.id, seen=False)
+    demand_form = AskFor()
+    offering_form = Offer()
 
-            return render(request, 'index.html', {"index_token": True, 'demand_form': demand_form, 'offering_form': offering_form, "deals": latest_ongoing_deals, 'categories': categories, 'notifications': notifications})
-        else:
-            return render(request, 'verify.html', {})
+    latest_ongoing_deals = Deal.objects.all()[0:6]
+    categories = Offering.objects.values_list('category', flat=True).distinct()
+
+    notifications = Notification.objects.filter(parent=request.user.id, seen=False)
+
+    return render(request, 'index.html', {"index_token": True, 'demand_form': demand_form, 'offering_form': offering_form, "deals": latest_ongoing_deals, 'categories': categories, 'notifications': notifications})
 
 
 @csrf_exempt
@@ -58,7 +66,6 @@ def clear_notifs(request):
             n.seen = True
             n.save()
         return HttpResponse("Cleared Notifications...")
-
 
 
 def register(request):
@@ -127,8 +134,19 @@ def send_otp(mail):
     return otp
 
 
+@csrf_exempt
 def profile(request):
     if request.method == "POST":
+        if request.content_type == 'application/json':
+            raw_data = request.body.decode('utf-8')
+            data = json.loads(raw_data)
+            notif_id = data['notif_id']
+
+            this_notif = Notification.objects.get(id = int(notif_id))
+            this_notif.clicked = True
+            this_notif.save()
+            return HttpResponse('Notification clicked...')
+
         deal_id = request.POST.get('dealId')
         grievance_form = PutGrievance(data=request.POST, files=request.FILES)
 
@@ -142,8 +160,20 @@ def profile(request):
             griev_count = OtpVerification.objects.get(parent=User.objects.get(id = grievance_instance.deal.borrower))
             griev_count.grievance_count+=1
             griev_count.save()
-            
+
+            new_notification = Notification(parent=User.objects.get(id = grievance_instance.deal.borrower), associated_url=f'/profile/#my_character', about=f'You have a complaint from {grievance_instance.deal.lender.username}')
+            new_notification.save()
+     
         return redirect('/profile')
+
+    if not request.user.is_authenticated:
+        messages.info(request, 'Register or login to enjoy services!')
+        return render(request, 'verify.html', {'registeration_required': True})
+
+    verifier = OtpVerification.objects.get(parent=request.user.id)
+    if not verifier.status:
+        messages.info(reqeust, 'Kindly verify your account with the OTP sent to your university email...')
+        return render(request, 'verify.html')
 
     notifications = Notification.objects.filter(parent=request.user.id, seen=False)
     borrowings = Deal.objects.filter(borrower=request.user.id)
@@ -171,8 +201,6 @@ def loginHandle(request):
         else:
             messages.error(request, "Invalid username or password...")
             return redirect('/')
-    else:
-        return render(request, 'notfound.html')
 
 
 def logoutHandle(request):

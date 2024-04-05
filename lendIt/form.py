@@ -34,7 +34,7 @@ class PutGrievance(forms.ModelForm):
     
     class Meta:
         model = Grievance
-        exclude = ['count', 'resolved' ,'timeStamp', 'defaulter', 'deal']
+        exclude = ['resolved' ,'timeStamp', 'defaulter', 'deal']
         
     def __init__(self, *args, **kwargs):
         super(PutGrievance, self).__init__(*args, **kwargs)
