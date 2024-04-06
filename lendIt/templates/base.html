@@ -36,11 +36,11 @@
         </li>
         <li class="nav-item mx-2">
           <a class="nav-link text-{% if lend_token %}primary{% else %}light{% endif %}"
-            href="/community/lend">Lending</a>
+            href="/community/lend">Demands</a>
         </li>
         <li class="nav-item mx-2">
           <a class="nav-link text-{% if borrow_token %}primary{% else %}light{% endif %}"
-            href="/community">Borrowing</a>
+            href="/community">Offerings</a>
         </li>
 
         {% if request.user.is_authenticated %}
@@ -154,15 +154,15 @@
         <div class="modal-body">
           <!-- register Form -->
           <form action="/register/" method="post"> {% csrf_token %}
-            <div class="form-group my-4">
+            <div class="row form-group my-4">
               <div class="form-floating col-6">
                 <input type="text" class="form-control" name="fname" id="fname" required>
-                <label for="fname" class="mx-1">First Name</label>
+                <label for="fname">First Name</label>
               </div>
 
               <div class="form-floating col-6">
                 <input type="text" class="form-control" name="lname" id="lname" required>
-                <label for="lname" class="mx-1">Last Name</label>
+                <label for="lname">Last Name</label>
               </div>
             </div>
 
@@ -170,15 +170,14 @@
               <label for="email">Email address</label>
               <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" required>
             </div>
-            <div class="form-group my-4">
-              <p>- Create Your Password -</p>
+            <div class="row form-group my-4">
               <div class="form-floating col-6">
                 <input type="password" class="form-control" id="pass1" name="pass1" required>
-                <label for="pass1" class="mx-1">Password</label>
+                <label for="pass1">Password</label>
               </div>
               <div class="form-floating col-6">
                 <input type="password" class="form-control" id="pass2" name="pass2" required>
-                <label for="pass2" class="mx-1">Re-enter Password</label>
+                <label for="pass2">Re-enter Password</label>
               </div>
             </div>
             <button type="submit" class="btn btn-primary">Register</button>

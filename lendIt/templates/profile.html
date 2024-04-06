@@ -33,6 +33,7 @@
                     <div class="card-body" style="color: #d4e4f9;">
                         <h5 class="card-title">{{borrowing.item.name}}</h5>
                         <p class="card-text">{{borrowing.timeStamp}}</p>
+                        <p class="card-text"><b>Item description:</b> {{borrowing.item.description}}</p>
 
                         {% if grievances|length == 0 %}
                         <button type="button" class="btn btn-light mt-3"
@@ -59,14 +60,17 @@
         <p class="text-light my-5 py-5" style="margin: auto; text-align: center;">No items lended yet!</p>
         {% else %}
         <div class="row mx-3">
-            {% for lending in lendings %}
+            {% for lending, borrower in lendings %}
             <div class="col-md-4 my-4">
                 <div class="card"
                     style="background: #0e141e !important; border: 1px solid #3a3a40 !important; border-radius: 1rem;">
 
                     <div class="card-body" style="color: #d4e4f9;">
                         <h5 class="card-title">{{lending.item.name}}</h5>
-                        <p class="card-text">{{lending.timeStamp}}</p>
+                        <p class="card-text text-success">{{lending.timeStamp}}</p>
+
+                        <p class="card-text"><b>Borrower:</b> {{borrower}}</p>
+                        <p class="card-text"><b>Item description:</b> {{lending.item.description}}</p>
 
                         {% if grievances|length == 0 %}
                         <button type="button" class="btn btn-light mb-3"

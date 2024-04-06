@@ -1,23 +1,33 @@
 {% extends "base.html" %}
 {% load static %}
+{% load humanize %}
 {% block body %}
 <div class="container mt-5">
-  {% if offerings|length  == 0 %}
-  <p class="text-light" style="margin: auto; text-align: center;"></p>No items available!
+  {% if offerings|length == 0 %}
+  <p class="text-light" style="margin: auto; text-align: center;">No items available!</p>
   {% else %}
   {% for category, offerings_list in offerings.items %}
-  {{category}}
+
+  {% if offerings_list|length != 0 %}
+  <h5 class="text-light my-3">[ {{category}} - {{offerings_list|length}} item(s) ]</h5>
+  {% endif %}
+
   <div class="row" id="category-{{category}}">
     {% for offering in offerings_list %}
-    <div class="col-md-6">
+    <div class="col-md-6 my-2">
       <div class="card bg-dark text-light">
         <div class="card-body">
           <img class="card-img-top float-right" src='/media/{{offering.image}}' alt="Card image"
             style="max-width: 200px; max-height: 150px;">
 
           <h5 class="card-title">{{offering.name}}</h5>
-          <p class="card-text">{{offering.lender.username}}</p>
-          <button type="button" class="btn btn-primary mt-3" data-toggle="modal" data-target="#lendModal" onclick="window.location = '/community/deal/{{offering.id}}by{{request.user.id}}/ongoing'">
+          <p class="card-text text-success">{{offering.timeStamp|naturaltime}}</p>
+          <p class="card-text"><b>Item description:</b> {{offering.description}}</p>
+
+          <p class="card-text"><b>By</b> {{offering.lender.username}}</p>
+
+          <button type="button" class="btn btn-success mt-3" data-toggle="modal" data-target="#lendModal"
+            onclick="window.location = '/community/deal/{{offering.id}}by{{request.user.id}}/ongoing'">
             Borrow
           </button>
         </div>
@@ -25,8 +35,13 @@
     </div>
     {%endfor%}
   </div>
+
+  {% if offerings_list|length != 0 %}
+  <hr class="mt-4 mb-5" style="background: rgb(99, 99, 99); margin-top: 0px;">
+  {% endif %}
+
   {% endfor %}
   {% endif %}
 </div>
-  
+
 {% endblock body %}

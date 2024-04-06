@@ -136,7 +136,8 @@ def dealing(request, id):
 
     id_stored = id
     id=id.split('by')
-    lender = Offering.objects.filter(id=int(id[0]))[0].lender
+    offer = Offering.objects.filter(id=int(id[0]))[0]
+    lender = offer.lender
 
     if request.user.id == lender.id:
         username = User.objects.filter(id=int(id[-1]))[0].username
@@ -171,7 +172,7 @@ def dealing(request, id):
         
         chats[room] = [chat[0], chat[0].sender if request.user.id!=chat[0].sender.id else User.objects.filter(id=chat[0].receiver)[0], f"{getting_room_url[0]}by{getting_room_url[1]}", Offering.objects.filter(id=int(getting_room_url[0]))[0]]
 
-    return render(request,'community/dealing.html', {'room_name': room_name, 'msgs': messages[::-1], 'username': username, 'id': id_stored, 'notification_receiver': msg_notification_receiver, 'chats': chats, 'item': item, 'chats_token': True, 'notifications': Notification.objects.filter(parent=request.user.id, seen=False)})
+    return render(request,'community/dealing.html', {'room_name': room_name, 'msgs': messages[::-1], 'username': username, 'id': id_stored, 'notification_receiver': msg_notification_receiver, 'chats': chats, 'item': item, 'chats_token': True, 'notifications': Notification.objects.filter(parent=request.user.id, seen=False), 'borrower_is_defaulter': len(Grievance.objects.filter(defaulter=int(id[-1]), resolved=False))>0 or len(Grievance.objects.filter(defaulter=lender.id, resolved=False))>0})
 
 
 def deal(request, id):
@@ -188,7 +189,7 @@ def deal(request, id):
         return redirect('/profile')
 
     deal = Deal.objects.filter(id=int(id))[0]
-    return render(request, 'community/deal.html', {'deal': deal, 'notifications': Notification.objects.filter(parent=request.user.id, seen=False)})
+    return render(request, 'community/deal.html', {'deal': deal, 'notifications': Notification.objects.filter(parent=request.user.id, seen=False), 'borrower': User.objects.get(id=deal.borrower)})
 
 
 def closing_deal(request, id):

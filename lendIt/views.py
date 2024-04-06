@@ -50,7 +50,7 @@ def index(request):
 
     notifications = Notification.objects.filter(parent=request.user.id, seen=False)
 
-    return render(request, 'index.html', {"index_token": True, 'demand_form': demand_form, 'offering_form': offering_form, "deals": latest_ongoing_deals, 'categories': categories, 'notifications': notifications})
+    return render(request, 'index.html', {"index_token": True, 'demand_form': demand_form, 'offering_form': offering_form, "deals": latest_ongoing_deals, 'categories': categories[:11], 'notifications': notifications})
 
 
 @csrf_exempt
@@ -113,7 +113,7 @@ def register(request):
                 return redirect(f'/')
 
         except Exception as e:
-            messages.error(request, f"Account already exists with {e}.")
+            messages.error(request, f"Account already exists: {e}.")
             return redirect('/')
 
         return redirect('/')
@@ -164,7 +164,9 @@ def profile(request):
 
             new_notification = Notification(parent=User.objects.get(id = grievance_instance.deal.borrower), associated_url=f'/profile/#my_character', about=f'You have a complaint from {grievance_instance.deal.lender.username}')
             new_notification.save()
-     
+            
+            messages.success(request, "Complaint has been sent.")
+
         return redirect('/profile')
 
     if not request.user.is_authenticated:
@@ -178,7 +180,8 @@ def profile(request):
 
     notifications = Notification.objects.filter(parent=request.user.id, seen=False)
     borrowings = Deal.objects.filter(borrower=request.user.id)
-    lendings = Deal.objects.filter(lender=request.user.id)
+    lending_deals = Deal.objects.filter(lender=request.user.id)
+    lendings = [[i, User.objects.get(id=i.borrower)] for i in lending_deals]
     grievances = Grievance.objects.filter(defaulter=request.user.id, resolved=False)
 
     grievance_form = PutGrievance()
@@ -278,4 +281,7 @@ def verify_payment(request):
             messages.error(request, f"Your payment failed unexpectedly. Don't worry! your money is safe - Error: {e}")
             return redirect('/profile')
     return redirect('/')
+
+# razorpay test card number (master card): 5267 3181 8797 5449
+
 

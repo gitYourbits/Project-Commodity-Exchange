@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% block body %}
 <div class="container mt-5 text-light">
-  {{deal}}
+  <div class="alert alert-success mt-4 mb-5 mx-4" role="alert">
+
+    Deal Details:<br>{<br><b>Lender:</b>
+      {{deal.item.lender.username}} <br><b>Borrower:</b> {{borrower}} <br><b>Item:</b>
+      {{deal.item.name}}<br>}
+
+  </div>
 </div>
-  
+
 {% endblock body %}

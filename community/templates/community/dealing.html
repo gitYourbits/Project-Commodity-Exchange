@@ -127,12 +127,18 @@
     </div>
 
     <div class="dealing" style="display: block; align-items: center; text-align: center; margin: auto;">
+        
+        {% if borrower_is_defaulter %}
+        <button id="defaulter_dealing" class="btn btn-outline-danger disabled" style="cursor: not-allowed;">User defaulter</button>
+
+        {% else %}
         <button id="close_deal" class="btn btn-outline-danger">Close Deal</button>
         <script>
             $('#close_deal').click(function () {
                 document.location = `/community/deal/{{id}}/closing`;
             })
         </script>
+        {% endif %}
     </div>
 
     {% endblock body %}
